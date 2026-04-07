@@ -33,44 +33,125 @@
 *{-webkit-font-smoothing:antialiased}
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg3);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh;letter-spacing:-0.01em}
 
-/* SIDEBAR */
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:232px;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
-.sb-header{padding:1.75rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,var(--accent-light),var(--bg))}
-.sb-brand{font-size:16px;font-weight:700;letter-spacing:0.18em;color:var(--accent-dark);text-transform:uppercase}
-.sb-sub{font-size:11px;color:var(--text3);margin-top:4px;letter-spacing:0.02em}
-.rate-box{padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:var(--bg2)}
-.rate-header{display:flex;align-items:center;gap:6px;margin-bottom:10px}
-.rate-title{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)}
+/* TOP HEADER */
+.top-header{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border)}
+.top-header-inner{display:flex;align-items:center;padding:0 1.5rem;height:52px;gap:0}
+.top-brand{display:flex;flex-direction:column;justify-content:center;margin-right:2rem;flex-shrink:0}
+.top-brand-name{font-size:14px;font-weight:700;letter-spacing:0.14em;color:var(--accent-dark);text-transform:uppercase;line-height:1}
+.top-brand-sub{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:0.03em}
+
+/* TOP TABS — PC는 헤더 안에, 모바일은 헤더 아래 별도 행 */
+.top-tabs{display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.top-tabs::-webkit-scrollbar{display:none}
+.top-tab{display:flex;align-items:center;padding:0 14px;height:52px;font-size:13px;color:var(--text2);cursor:pointer;border:none;background:transparent;font-family:inherit;font-weight:400;transition:all 0.15s;white-space:nowrap;border-bottom:2.5px solid transparent;margin-bottom:-1px;flex-shrink:0}
+.top-tab:hover{color:var(--text);background:var(--bg2)}
+.top-tab.active{color:var(--accent-dark);font-weight:600;border-bottom-color:var(--accent);background:var(--accent-light)}
+
+/* TOP RIGHT */
+.top-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+
+/* RATE BOX */
+.rate-mini{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);background:var(--bg2);padding:5px 10px;border-radius:99px;border:1px solid var(--border);cursor:pointer;white-space:nowrap}
+.rate-mini:hover{border-color:var(--accent)}
 .rate-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0}
 .rate-dot.live{animation:pulse 2s infinite}
 .rate-dot.stale{background:#f59e0b}
 .rate-dot.error{background:#ef4444;animation:none}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
-.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px}
+
+/* RATE DROPDOWN */
+.rate-dropdown{position:fixed;top:60px;right:12px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--rmd);padding:1rem 1.25rem;z-index:200;box-shadow:0 8px 30px rgba(0,0,0,0.12);min-width:260px;display:none}
+.rate-dropdown.open{display:block}
+.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px}
 .rate-item{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;color:var(--text2);border-bottom:1px solid var(--border)}
 .rate-item:nth-child(odd){grid-column:1}.rate-item:nth-child(even){grid-column:2}
 .rate-cur{font-weight:500;color:var(--text3);font-size:10px}
 .rate-val{font-weight:600;color:var(--accent-dark);font-variant-numeric:tabular-nums;font-size:11px}
 .rate-footer{margin-top:8px;display:flex;justify-content:space-between;align-items:center}
 .rate-refresh{cursor:pointer;font-size:11px;color:var(--accent);background:none;border:none;font-family:inherit;padding:0;font-weight:500}
-.nav-section{padding:1.25rem 1.5rem 0.35rem;font-size:10px;font-weight:600;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.5rem;font-size:13px;color:var(--text2);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;font-weight:400;transition:all 0.15s}
-.nav-item:hover{color:var(--text);background:var(--bg2)}
-.nav-item.active{color:var(--accent-dark);font-weight:600;background:var(--accent-light);border-right:3px solid var(--accent)}
-.sb-footer{padding:1rem 1.5rem;border-top:1px solid var(--border)}
-.sb-footer-label{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
+
+/* BRAND TABS */
+.brand-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+.brand-tabs::-webkit-scrollbar{display:none}
+.brand-tab{padding:6px 14px;border:1px solid var(--border2);border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--text2);font-family:inherit;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
+.brand-tab:hover{border-color:var(--accent);color:var(--accent-dark);background:var(--accent-light)}
+.brand-tab.active{background:var(--accent-dark);color:#fff;border-color:var(--accent-dark)}
 
 /* BRAND NAV */
-.brand-item{padding-left:2rem;font-size:12px;color:var(--text2)}
-.brand-item.active-brand{color:var(--accent-dark);font-weight:600;background:var(--accent-light);border-right:3px solid var(--accent)}
-.brand-count{background:var(--bg3);border-radius:99px;padding:1px 7px;font-size:10px}
+.brand-nav-item{display:none}
 
 /* MAIN */
-.main{margin-left:232px;padding:2.5rem;min-height:100vh}
+.main{margin-left:0;padding:1.5rem;padding-top:calc(52px + 48px + 1rem);min-height:100vh}
 .page{display:none}.page.active{display:block}
-.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:12px}
-.page-title{font-size:24px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
-.page-desc{font-size:13px;color:var(--text3);margin-top:4px}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.page-title{font-size:20px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.page-desc{font-size:13px;color:var(--text3);margin-top:3px}
+
+/* MOBILE TAB ROW */
+.mobile-tabs{display:none;position:fixed;top:52px;left:0;right:0;z-index:99;background:var(--bg);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mobile-tabs::-webkit-scrollbar{display:none}
+.mobile-tabs-inner{display:flex;padding:0 8px;min-width:max-content}
+.mobile-tab{padding:10px 14px;font-size:13px;color:var(--text2);cursor:pointer;border:none;background:transparent;font-family:inherit;font-weight:400;white-space:nowrap;border-bottom:2px solid transparent;flex-shrink:0}
+.mobile-tab.active{color:var(--accent-dark);font-weight:600;border-bottom-color:var(--accent)}
+
+/* CARDS */
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:1.25rem;margin-bottom:0.75rem}
+.card-title{font-size:10px;color:var(--text3);margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem}
+.kpi{background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:1rem 1.25rem;transition:all 0.15s;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-dark));opacity:0;transition:opacity 0.15s}
+.kpi:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(56,189,248,0.1)}
+.kpi:hover::before{opacity:1}
+.kpi-l{font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em}
+.kpi-v{font-size:22px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.kpi-s{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* MOBILE */
+.menu-toggle{display:none}
+@media(max-width:720px){
+  /* 헤더에서 탭 숨기고 */
+  .top-tabs{display:none}
+  /* 모바일 탭 행 표시 */
+  .mobile-tabs{display:block}
+  /* 헤더 우측 간소화 */
+  .top-header-inner{padding:0 1rem;height:52px}
+  .top-brand-sub{display:none}
+  .rate-mini span:not(.rate-dot){display:none}
+  .rate-mini{padding:6px 8px}
+  /* sync label 숨김 */
+  #syncLabel{display:none}
+  /* 메인 패딩 */
+  .main{padding:0.875rem;padding-top:calc(52px + 42px + 0.875rem)}
+  /* 카드 */
+  .card{padding:1rem}
+  /* kpi 2열 */
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi-v{font-size:20px}
+  /* row2 1열 */
+  .row2{grid-template-columns:1fr}
+  /* 테이블 스크롤 */
+  .tbl-wrap{-webkit-overflow-scrolling:touch}
+  table{font-size:12px}
+  th,td{padding:8px 8px}
+  /* 발주 빠른 입력 */
+  .variant-item{grid-template-columns:1fr 60px 60px auto}
+  /* 모달 */
+  .modal{padding:1.25rem}
+  .modal-title{font-size:16px}
+  .form-row{grid-template-columns:1fr}
+  /* 노트 */
+  .notes-layout{grid-template-columns:1fr}
+  .notes-sidebar{display:none}
+  /* rate dropdown */
+  .rate-dropdown{right:8px;left:8px;min-width:auto}
+  /* page header */
+  .page-header{margin-bottom:1rem}
+  .page-title{font-size:18px}
+  /* admin banner */
+  #adminBanner span:first-child{font-size:11px}
+}
 
 /* CARDS */
 .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:1.5rem;margin-bottom:1rem}
@@ -227,76 +308,6 @@ body.viewer-mode .sb-footer.master-only{display:none}
 .viewer-only{display:none}
 body.viewer-mode .viewer-only{display:inline-flex}
 
-/* MOBILE */
-.menu-toggle{display:none;align-items:center;justify-content:center;position:fixed;top:1rem;left:1rem;z-index:300;width:40px;height:40px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);cursor:pointer;font-size:18px;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:99;backdrop-filter:blur(2px)}
-.sidebar-backdrop.open{display:block}
-
-/* Mobile notes toggle */
-.notes-mobile-tabs{display:none;gap:0;border-bottom:1px solid var(--border);background:var(--bg2)}
-.notes-mobile-tab{flex:1;padding:10px;font-size:13px;font-weight:600;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all 0.15s}
-.notes-mobile-tab.active{color:var(--accent-dark);border-bottom-color:var(--accent);background:var(--bg)}
-
-@media(max-width:680px){
-  .sidebar{transform:translateX(-100%);transition:transform 0.25s ease;width:80vw;max-width:280px}
-  .sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,0.15)}
-  .main{margin-left:0;padding:1rem;padding-top:4.5rem;padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
-  .menu-toggle{display:flex;top:0.75rem;left:0.75rem}
-  body.has-admin-banner .menu-toggle{top:3rem}
-  .kpi-v{font-size:20px}
-  .variant-item{grid-template-columns:1fr 65px 65px auto;gap:5px}
-
-  /* Page header stacks on mobile */
-  .page-header{flex-direction:column;align-items:flex-start;gap:10px}
-  .page-title{font-size:20px}
-
-  /* KPI 2 columns on mobile */
-  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .kpi{padding:1rem 1rem}
-  .kpi-l{font-size:10px}
-
-  /* Row2 stacks */
-  .row2{grid-template-columns:1fr}
-
-  /* Cards tighter */
-  .card{padding:1rem;margin-bottom:0.75rem}
-
-  /* Brand tabs scroll */
-  .brand-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
-  .brand-tabs::-webkit-scrollbar{display:none}
-  .brand-tab{flex-shrink:0}
-
-  /* Tables: horizontal scroll with min-width hints */
-  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -1rem;padding:0 1rem}
-  table{font-size:12px;min-width:500px}
-  th,td{padding:8px 10px}
-
-  /* Modals full width */
-  .modal-overlay{padding:0;align-items:flex-end}
-  .modal{border-radius:var(--rxl) var(--rxl) 0 0;max-width:100%;width:100%;max-height:92vh;overflow-y:auto;padding:1.5rem 1.25rem}
-  .modal-title{font-size:16px;margin-bottom:1.25rem}
-
-  /* Form rows single column */
-  .form-row{grid-template-columns:1fr}
-
-  /* Quick input stacks */
-  .quick-input-row{flex-direction:column!important}
-  .quick-input-row input{width:100%}
-  .quick-input-row button{width:100%}
-
-  /* Viewer banner compact */
-  .viewer-banner{font-size:11px;padding:6px 14px}
-  .viewer-banner .banner-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-  /* Sourcing row2 stacks */
-  .suggest-box{flex-direction:column;align-items:flex-start}
-
-  /* Sidebar footer compact */
-  .sb-footer{padding:0.75rem 1rem}
-
-  /* Admin banner + menu-toggle spacing */
-  #adminBanner ~ * .menu-toggle, .has-admin-banner .menu-toggle{top:3.25rem}
-}
 /* NOTES PAGE */
 .notes-layout{display:grid;grid-template-columns:260px 1fr;gap:0;min-height:calc(100vh - 180px);background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);overflow:hidden}
 .notes-sidebar{border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg2)}
@@ -326,19 +337,6 @@ body.viewer-mode .viewer-only{display:inline-flex}
 .notes-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--text3);gap:14px;padding:4rem;text-align:center}
 .notes-empty-icon{font-size:52px;opacity:0.2}
 .note-tag-btn{padding:5px 12px;border-radius:99px;font-size:11px;font-weight:500;border:1px solid var(--border2);background:transparent;cursor:pointer;font-family:inherit;color:var(--text2);transition:all 0.12s}
-@media(max-width:680px){
-  .notes-layout{grid-template-columns:1fr;min-height:calc(100vh - 220px)}
-  .notes-mobile-tabs{display:flex}
-  .notes-sidebar{border-right:none}
-  .notes-sidebar[data-mobile-hidden="true"]{display:none}
-  .notes-editor[data-mobile-hidden="true"]{display:none}
-  .notes-editor-body{padding:1rem 1.25rem}
-  .note-content-input{min-height:300px;font-size:15px;line-height:1.8}
-  .note-title-input{font-size:17px}
-  .notes-editor-header{padding:0.75rem 1rem;gap:6px}
-  .notes-editor-header .note-tag-btn{padding:4px 10px;font-size:10px}
-  .notes-empty-state{padding:2.5rem 1.5rem}
-}
 .note-tag-btn:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent-dark)}
 .note-tag-btn.selected{background:var(--accent-dark);color:#fff;border-color:var(--accent-dark)}
 .note-save-indicator{font-size:11px;color:var(--text3);margin-left:auto}
@@ -350,68 +348,82 @@ body.viewer-mode .viewer-only{display:inline-flex}
 </head>
 <body>
 
-<!-- ADMIN BANNER -->
-<div class="viewer-banner" id="adminBanner" style="display:none;background:var(--gbg);color:var(--gtxt);border-color:rgba(6,95,70,0.2)">
-  <span class="banner-text">👑 관리자 모드 — 데이터 수정 가능</span>
-  <button onclick="lockAdmin()" style="color:var(--gtxt)">잠금</button>
-</div>
-
-<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
-<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
-
-<!-- SIDEBAR -->
-<nav class="sidebar" id="sidebar">
-  <div class="sb-header">
-    <div class="sb-brand">HOLIDAYS</div>
-    <div class="sb-sub">해외 소싱 관리 시스템</div>
-  </div>
-  <div class="rate-box">
-    <div class="rate-header">
-      <div class="rate-dot" id="rateDot"></div>
-      <span class="rate-title">실시간 환율</span>
+<!-- TOP HEADER -->
+<header class="top-header">
+  <div class="top-header-inner">
+    <div class="top-brand">
+      <div class="top-brand-name">HOLIDAYS</div>
+      <div class="top-brand-sub">재고·발주 관리</div>
     </div>
-    <div class="rate-grid" id="rateGrid"><div style="grid-column:1/-1;font-size:12px;color:var(--text3);padding:4px 0">불러오는 중...</div></div>
-    <div class="rate-footer">
-      <span style="font-size:10px;color:var(--text3)" id="rateSource"></span>
-      <button class="rate-refresh" onclick="fetchRates()">↻ 새로고침</button>
-    </div>
-  </div>
-  <div class="nav-section">메뉴</div>
-  <button class="nav-item active" onclick="switchPage('dash',this)">◼ 대시보드</button>
-  <button class="nav-item" id="navInventory" onclick="switchPage('inventory',this);filterBrand('전체')">◻ 재고 관리</button>
-  <button class="nav-item" onclick="switchPage('orders',this)">◇ 발주 관리</button>
-  <button class="nav-item" onclick="switchPage('contacts',this)">☎ 컨택 관리</button>
-  <button class="nav-item" onclick="switchPage('notes',this)">✎ 메모</button>
-  <button class="nav-item" onclick="switchPage('sourcing',this)">◈ 소싱 원가</button>
-  <button class="nav-item" onclick="switchPage('sales',this)">◆ 매출 / 수익</button>
-
-  <div class="nav-section" style="margin-top:0.5rem">브랜드</div>
-  <button class="brand-nav-item active" id="brand-btn-전체" onclick="switchPage('inventory',document.getElementById('navInventory'));filterBrand('전체')">
-    <span>전체</span><span class="brand-count" id="bc-전체">0</span>
-  </button>
-  <div id="brandNavList"></div>
-  <div class="sb-footer master-only edit-only">
-    <div class="sb-footer-label">데이터 백업</div>
-    <button class="btn btn-sm" onclick="exportData()" style="width:100%;margin-bottom:6px">JSON 내보내기</button>
-    <label class="btn btn-sm" style="width:100%;display:block;text-align:center;cursor:pointer">JSON 불러오기
-      <input type="file" accept=".json" onchange="importData(event)" style="display:none">
-    </label>
-  </div>
-  <div class="sb-footer">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:12px;color:var(--text2);display:flex;align-items:center">
+    <nav class="top-tabs">
+      <button class="top-tab active" onclick="switchPage('dash',this)">대시보드</button>
+      <button class="top-tab" id="navInventory" onclick="switchPage('inventory',this);filterBrand('전체')">재고 관리</button>
+      <button class="top-tab" onclick="switchPage('orders',this)">발주 관리</button>
+      <button class="top-tab" onclick="switchPage('contacts',this)">컨택 관리</button>
+      <button class="top-tab" onclick="switchPage('notes',this)">메모</button>
+      <button class="top-tab" onclick="switchPage('sourcing',this)">소싱 원가</button>
+      <button class="top-tab" onclick="switchPage('sales',this)">매출 / 수익</button>
+    </nav>
+    <div class="top-right">
+      <!-- 환율 미니 -->
+      <div class="rate-mini" onclick="toggleRateDropdown()">
+        <div class="rate-dot live" id="rateDot"></div>
+        <span id="rateEurMini">EUR —</span>
+        <span style="color:var(--text3)">↓</span>
+      </div>
+      <!-- 동기화 상태 -->
+      <span style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px">
         <span class="sync-dot" id="syncDot"></span><span id="syncLabel">연결 중...</span>
       </span>
-      <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('pwModal'))" style="font-size:11px;padding:4px 8px">비번 설정</button>
-    </div>
-    <div id="adminLockBtn">
-      <button class="btn btn-sm" style="width:100%;color:var(--accent-dark);border-color:var(--accent)" onclick="requestAdminUnlock()">🔐 관리자 모드</button>
-    </div>
-    <div id="adminUnlockBtn" style="display:none">
-      <button class="btn btn-sm" style="width:100%;color:var(--rtxt)" onclick="lockAdmin()">🔓 잠금</button>
+      <!-- 관리자 -->
+      <div id="adminLockBtn">
+        <button class="btn btn-sm" style="color:var(--accent-dark);border-color:var(--accent);font-size:12px" onclick="requestAdminUnlock()">🔐 관리자</button>
+      </div>
+      <div id="adminUnlockBtn" style="display:none;gap:6px;display:none">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('pwModal'))" style="font-size:11px">비번</button>
+        <button class="btn btn-sm" style="color:var(--rtxt);font-size:12px" onclick="lockAdmin()">🔓 잠금</button>
+      </div>
     </div>
   </div>
-</nav>
+  <!-- 관리자 배너 -->
+  <div id="adminBanner" style="display:none;background:var(--gbg);color:var(--gtxt);font-size:12px;padding:5px 2rem;display:none;align-items:center;justify-content:space-between;border-top:1px solid rgba(6,95,70,0.2)">
+    <span>👑 관리자 모드 — 데이터 수정 가능</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-sm edit-only" onclick="exportData()" style="font-size:11px">JSON 내보내기</button>
+      <label class="btn btn-sm edit-only" style="font-size:11px;cursor:pointer">JSON 불러오기<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+      <button onclick="lockAdmin()" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--gtxt);font-family:inherit;font-weight:600">잠금</button>
+    </div>
+  </div>
+</header>
+
+<!-- 모바일 탭 행 (720px 이하에서만 표시) -->
+<div class="mobile-tabs" id="mobileTabs">
+  <div class="mobile-tabs-inner">
+    <button class="mobile-tab active" onclick="switchPage('dash',this)">대시보드</button>
+    <button class="mobile-tab" onclick="switchPage('inventory',this);filterBrand('전체')">재고</button>
+    <button class="mobile-tab" onclick="switchPage('orders',this)">발주</button>
+    <button class="mobile-tab" onclick="switchPage('contacts',this)">컨택</button>
+    <button class="mobile-tab" onclick="switchPage('notes',this)">메모</button>
+    <button class="mobile-tab" onclick="switchPage('sourcing',this)">소싱원가</button>
+    <button class="mobile-tab" onclick="switchPage('sales',this)">매출</button>
+  </div>
+</div>
+
+<!-- 환율 드롭다운 -->
+<div class="rate-dropdown" id="rateDropdown">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em">실시간 환율</span>
+    <button class="rate-refresh" onclick="fetchRates()">↻ 새로고침</button>
+  </div>
+  <div class="rate-grid" id="rateGrid"><div style="grid-column:1/-1;font-size:12px;color:var(--text3)">불러오는 중...</div></div>
+  <div class="rate-footer" style="margin-top:8px">
+    <span style="font-size:10px;color:var(--text3)" id="rateSource"></span>
+  </div>
+</div>
+
+<!-- brandNavList (숨김 — 브랜드 탭은 메인에서 렌더링) -->
+<div id="brandNavList" style="display:none"></div>
+<div id="bc-전체" style="display:none"></div>
 
 <!-- MAIN -->
 <main class="main">
@@ -486,7 +498,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         <br>예: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">Clinq TIA, Silver, 10, 42.5, 89000, 독일</span>
         <br>옵션 없으면: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">아로마 캔들, 50, 8.5, 35000, 프랑스</span>
       </div>
-      <div style="display:flex;gap:8px;align-items:center" class="quick-input-row">
+      <div style="display:flex;gap:8px;align-items:center">
         <input type="text" id="quickInput" placeholder="제품명, 옵션명(선택), 수량, 원가EUR, 판매가KRW, 국가" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickInput()">
         <button class="btn btn-primary" onclick="submitQuickInput()" style="white-space:nowrap;padding:11px 18px">등록 ↵</button>
       </div>
@@ -579,7 +591,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         예: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">Lorenzi, 이탈리아, 3135, EUR, 배송비포함, 주문준비완료, 20</span><br>
         상태: 대기중 / 주문준비완료 / 결제대기 / 배송중 / 입고완료
       </div>
-      <div style="display:flex;gap:8px;align-items:center" class="quick-input-row">
+      <div style="display:flex;gap:8px;align-items:center">
         <input type="text" id="quickOrderInput" placeholder="공급사, 국가, 금액, 통화, 배송방식, 상태, 수량" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickOrder()">
         <button class="btn btn-primary" onclick="submitQuickOrder()" style="padding:11px 18px;white-space:nowrap">등록 ↵</button>
       </div>
@@ -601,7 +613,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">브랜드, 국가, 주요품목, 소싱품목, 특이사항, 상태</span><br>
         예: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">Clinq, 독일, 헤어ACC, TIA/NELE/LYA, MOQ 10개 Silver만, 진행중</span>
       </div>
-      <div style="display:flex;gap:8px;align-items:center" class="quick-input-row">
+      <div style="display:flex;gap:8px;align-items:center">
         <input type="text" id="quickContactInput" placeholder="브랜드, 국가, 주요품목, 소싱품목, 특이사항, 상태" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickContact()">
         <button class="btn btn-primary" onclick="submitQuickContact()" style="padding:11px 18px;white-space:nowrap">등록 ↵</button>
       </div>
@@ -625,11 +637,6 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(newNote)">+ 새 메모</button>
     </div>
     <div class="notes-layout">
-      <!-- 모바일 탭 토글 -->
-      <div class="notes-mobile-tabs" id="notesMobileTabs">
-        <button class="notes-mobile-tab active" id="notesTabList" onclick="switchNotesMobileTab('list')">📋 메모 목록</button>
-        <button class="notes-mobile-tab" id="notesTabEditor" onclick="switchNotesMobileTab('editor')">✎ 편집</button>
-      </div>
       <!-- 왼쪽: 메모 목록 -->
       <div class="notes-sidebar">
         <div class="notes-sidebar-header">
@@ -1071,13 +1078,26 @@ function renderRates(src,date,st){
   if(rs)rs.textContent=src+'·'+date;
   const eb=document.getElementById('sourcingEurBadge');
   if(eb)eb.innerHTML=`<span class="badge b-accent">EUR ${R.EUR.toLocaleString()}원</span>`;
+  // 상단 미니 환율 업데이트
+  const mini=document.getElementById('rateEurMini');
+  if(mini)mini.textContent=`EUR ${R.EUR.toLocaleString()}원`;
 }
 function getR(cur){return R[cur.startsWith('EUR_')?'EUR':cur]||1;}
+
+// 환율 드롭다운 토글
+window.toggleRateDropdown=function(){
+  const dd=document.getElementById('rateDropdown');
+  if(dd)dd.classList.toggle('open');
+};
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('rateDropdown');
+  if(dd&&!e.target.closest('.rate-mini')&&!e.target.closest('.rate-dropdown'))dd.classList.remove('open');
+});
 
 /* ── NAV ── */
 window.switchPage=function(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.top-tab,.mobile-tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(btn)btn.classList.add('active');
   if(id==='dash')renderDash();
@@ -1087,7 +1107,6 @@ window.switchPage=function(id,btn){
   if(id==='contacts')renderContacts();
   if(id==='notes'){renderNotesList();}
   if(id==='sales'){initSalesMonth();renderSales();}
-  if(window.innerWidth<=680)document.getElementById('sidebar').classList.remove('open');
 };
 window.openModal=id=>document.getElementById(id).classList.add('open');
 window.closeModal=id=>document.getElementById(id).classList.remove('open');
@@ -1160,39 +1179,59 @@ function renderDash(){
     od.textContent=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} 기준`;
   }
   if(oe){
-    const activeOrders=orders.filter(o=>o.status!=='arrived'&&o.status!=='cancelled');
-    const totalKrw=activeOrders.reduce((s,o)=>s+(o.amountKrw||0),0);
-    if(ot)ot.textContent=activeOrders.length?`총 ${won(totalKrw)} (${activeOrders.length}건 진행중)`:'진행 중인 발주 없음';
+    // 발주예정: 대기중
+    const pendingOrders=orders.filter(o=>o.status==='pending');
+    // 발주완료: 주문준비완료/결제대기/배송중/입고완료
+    const confirmedOrders=orders.filter(o=>['preparing','payment','shipping','arrived'].includes(o.status));
+    const pendingKrw=pendingOrders.reduce((s,o)=>s+(o.amountKrw||0),0);
+    const confirmedKrw=confirmedOrders.reduce((s,o)=>s+(o.amountKrw||0),0);
+
+    if(ot)ot.innerHTML=`
+      <span style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:12px;font-weight:500;color:var(--atxt);background:var(--abg);padding:3px 12px;border-radius:99px">발주예정 ${won(pendingKrw)} (${pendingOrders.length}건)</span>
+        <span style="font-size:12px;font-weight:500;color:var(--gtxt);background:var(--gbg);padding:3px 12px;border-radius:99px">발주완료 ${won(confirmedKrw)} (${confirmedOrders.length}건)</span>
+      </span>`;
+
     if(!orders.length){
       oe.innerHTML='<div class="empty">발주 내역이 없습니다</div>';
     }else{
       const symOf=c=>({EUR:'€',GBP:'£',JPY:'¥',USD:'$',CNY:'¥',CHF:'₣'}[c]||c+' ');
-      oe.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:13px">
-        <thead><tr>
-          <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">공급사</th>
-          <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">국가</th>
-          <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">주문금액</th>
-          <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">원화환산</th>
-          <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">배송</th>
-          <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">진행상태</th>
-        </tr></thead>
-        <tbody>
-        ${orders.map(o=>{
-          const st=ORDER_STATUS[o.status]||ORDER_STATUS.pending;
-          const currency=o.currency||'EUR';
-          const amtLocal=o.amountLocal||o.amountEur||0;
-          const rowStyle=o.status==='arrived'?'opacity:0.45':o.status==='cancelled'?'opacity:0.3':'';
-          return`<tr style="${rowStyle}">
-            <td style="padding:9px 10px;border-bottom:1px solid var(--border);font-weight:600">${o.name}</td>
-            <td style="padding:9px 10px;border-bottom:1px solid var(--border)">${countryFlag[o.country]||'🌐'} ${o.country}</td>
-            <td style="padding:9px 10px;border-bottom:1px solid var(--border);font-weight:600">${amtLocal?symOf(currency)+Number(amtLocal).toLocaleString():'-'}</td>
-            <td style="padding:9px 10px;border-bottom:1px solid var(--border);color:var(--accent-dark);font-weight:700">${o.amountKrw?won(o.amountKrw):'-'}</td>
-            <td style="padding:9px 10px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3)">${o.shipping||'-'}</td>
-            <td style="padding:9px 10px;border-bottom:1px solid var(--border)"><span class="badge ${st.cls}" style="font-size:11px">${st.label}</span></td>
-          </tr>`;
-        }).join('')}
-        </tbody>
-      </table>`;
+      const th=`<thead><tr>
+        <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">공급사</th>
+        <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">국가</th>
+        <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">주문금액</th>
+        <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">원화환산</th>
+        <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">배송</th>
+        <th style="font-size:10px;font-weight:600;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em">상태</th>
+      </tr></thead>`;
+
+      const rowsOf=(list)=>list.map(o=>{
+        const st=ORDER_STATUS[o.status]||ORDER_STATUS.pending;
+        const currency=o.currency||'EUR';
+        const amtLocal=o.amountLocal||o.amountEur||0;
+        return`<tr>
+          <td style="padding:9px 10px;border-bottom:1px solid var(--border);font-weight:600">${o.name}</td>
+          <td style="padding:9px 10px;border-bottom:1px solid var(--border)">${countryFlag[o.country]||'🌐'} ${o.country}</td>
+          <td style="padding:9px 10px;border-bottom:1px solid var(--border);font-weight:600">${amtLocal?symOf(currency)+Number(amtLocal).toLocaleString():'-'}</td>
+          <td style="padding:9px 10px;border-bottom:1px solid var(--border);color:var(--accent-dark);font-weight:700">${o.amountKrw?won(o.amountKrw):'-'}</td>
+          <td style="padding:9px 10px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3)">${o.shipping||'-'}</td>
+          <td style="padding:9px 10px;border-bottom:1px solid var(--border)"><span class="badge ${st.cls}" style="font-size:11px">${st.label}</span></td>
+        </tr>`;
+      }).join('');
+
+      oe.innerHTML=`
+        ${pendingOrders.length?`
+          <div style="font-size:11px;font-weight:700;color:var(--atxt);text-transform:uppercase;letter-spacing:0.08em;padding:10px 10px 4px;background:var(--abg);border-radius:8px 8px 0 0;margin-bottom:0">📋 발주 예정 — ${won(pendingKrw)}</div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px">${th}<tbody>${rowsOf(pendingOrders)}</tbody></table>
+        `:''}
+        ${doneOrders.length?`
+          <div style="font-size:11px;font-weight:700;color:var(--gtxt);text-transform:uppercase;letter-spacing:0.08em;padding:10px 10px 4px;background:var(--gbg);border-radius:8px 8px 0 0;margin-top:8px">✅ 발주 완료 — ${won(doneKrw)}</div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">${th}<tbody>${rowsOf(doneOrders)}</tbody></table>
+        `:''}
+        ${orders.filter(o=>o.status==='cancelled').length?`
+          <div style="font-size:11px;color:var(--text3);padding:8px 10px">취소 ${orders.filter(o=>o.status==='cancelled').length}건 제외됨</div>
+        `:''}
+      `;
     }
   }
 
@@ -1654,8 +1693,10 @@ function renderOrders(){
   const tb=document.getElementById('orderBody');if(!tb)return;
   if(!orders.length){tb.innerHTML='<tr><td colspan="11"><div class="empty">발주 내역이 없습니다</div></td></tr>';return;}
   const symOf=c=>({EUR:'€',GBP:'£',JPY:'¥',USD:'$',CNY:'¥',CHF:'₣'}[c]||c+' ');
-  // 합계 KRW
-  const totalKrw=orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.amountKrw||0),0);
+  // 합계 분리
+  const pendingKrw=orders.filter(o=>o.status==='pending').reduce((s,o)=>s+(o.amountKrw||0),0);
+  const confirmedKrw=orders.filter(o=>['preparing','payment','shipping','arrived'].includes(o.status)).reduce((s,o)=>s+(o.amountKrw||0),0);
+  const totalKrw=pendingKrw+confirmedKrw;
   tb.innerHTML=orders.map(o=>{
     const st=ORDER_STATUS[o.status]||ORDER_STATUS.pending;
     const currency=o.currency||'EUR';
@@ -1686,9 +1727,19 @@ function renderOrders(){
       </td>
     </tr>`;
   }).join('')
-  +`<tr style="background:var(--bg2);font-weight:700">
-    <td colspan="5" style="text-align:right;color:var(--text3);font-size:12px">총 발주 합계 (취소 제외)</td>
-    <td style="color:var(--accent-dark)">${won(totalKrw)}</td>
+  +`<tr style="background:var(--bg2)">
+    <td colspan="5" style="text-align:right;color:var(--text3);font-size:12px;padding:10px 12px">발주 예정 <span style="font-size:10px;opacity:0.7">(대기중)</span></td>
+    <td style="padding:10px 12px;font-weight:600;color:var(--atxt)">${won(pendingKrw)}</td>
+    <td colspan="5"></td>
+  </tr>
+  <tr style="background:var(--bg2)">
+    <td colspan="5" style="text-align:right;color:var(--text3);font-size:12px;padding:6px 12px">발주 완료 <span style="font-size:10px;opacity:0.7">(준비완료·결제·배송·입고)</span></td>
+    <td style="padding:6px 12px;font-weight:600;color:var(--gtxt)">${won(confirmedKrw)}</td>
+    <td colspan="5"></td>
+  </tr>
+  <tr style="background:var(--bg3);border-top:1px solid var(--border2)">
+    <td colspan="5" style="text-align:right;color:var(--text2);font-size:12px;font-weight:700;padding:10px 12px">총 합계 (취소 제외)</td>
+    <td style="padding:10px 12px;font-weight:700;font-size:15px;color:var(--accent-dark)">${won(totalKrw)}</td>
     <td colspan="5"></td>
   </tr>`;
 }
@@ -1776,7 +1827,7 @@ window.submitAdminAuth=function(){
     document.body.classList.remove('viewer-mode');
     document.getElementById('adminBanner').style.display='flex';
     document.getElementById('adminLockBtn').style.display='none';
-    document.getElementById('adminUnlockBtn').style.display='block';
+    document.getElementById('adminUnlockBtn').style.display='flex';
     if(pendingAction){pendingAction();pendingAction=null;}
   }else{err.textContent='비밀번호가 올바르지 않습니다';err.classList.add('show');}
 };
@@ -2077,7 +2128,6 @@ window.newNote=function(){
   currentNoteId=id;
   renderNotesList();
   renderNoteEditor(note);
-  if(window.innerWidth<=680&&window.switchNotesMobileTab)switchNotesMobileTab('editor');
 };
 
 window.openNote=function(id){
@@ -2086,7 +2136,6 @@ window.openNote=function(id){
   if(!note)return;
   renderNotesList();
   renderNoteEditor(note);
-  if(window.innerWidth<=680&&window.switchNotesMobileTab)switchNotesMobileTab('editor');
 };
 
 function renderNoteEditor(note){
@@ -2144,47 +2193,6 @@ window.deleteNote=async function(id){
   currentNoteId=null;
   const editor=document.getElementById('notesEditor');
   if(editor)editor.innerHTML=`<div class="notes-empty-state"><div class="notes-empty-icon">✎</div><div style="font-weight:600;font-size:15px;color:var(--text2)">메모가 삭제됐어요</div><button class="btn btn-primary edit-only" onclick="requestAdminUnlock(newNote)" style="margin-top:8px">+ 새 메모 작성</button></div>`;
-};
-
-/* ── MOBILE HELPERS ── */
-function toggleSidebar(){
-  const sb=document.getElementById('sidebar');
-  const bd=document.getElementById('sidebarBackdrop');
-  const open=sb.classList.toggle('open');
-  bd.classList.toggle('open',open);
-}
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarBackdrop').classList.remove('open');
-}
-
-// Auto-close sidebar on nav click (mobile)
-document.querySelectorAll('.nav-item,.brand-nav-item').forEach(el=>{
-  el.addEventListener('click',()=>{if(window.innerWidth<=680)closeSidebar();});
-});
-
-// Notes mobile tab switcher
-let notesMobileView='list';
-window.switchNotesMobileTab=function(tab){
-  notesMobileView=tab;
-  const sidebar=document.querySelector('.notes-sidebar');
-  const editor=document.getElementById('notesEditor');
-  const tabList=document.getElementById('notesTabList');
-  const tabEditor=document.getElementById('notesTabEditor');
-  if(window.innerWidth>680){
-    if(sidebar){sidebar.removeAttribute('data-mobile-hidden');}
-    if(editor){editor.removeAttribute('data-mobile-hidden');}
-    return;
-  }
-  if(tab==='list'){
-    if(sidebar)sidebar.removeAttribute('data-mobile-hidden');
-    if(editor)editor.setAttribute('data-mobile-hidden','true');
-    tabList.classList.add('active');tabEditor.classList.remove('active');
-  } else {
-    if(sidebar)sidebar.setAttribute('data-mobile-hidden','true');
-    if(editor)editor.removeAttribute('data-mobile-hidden');
-    tabEditor.classList.add('active');tabList.classList.remove('active');
-  }
 };
 
 /* ── INIT ── */
