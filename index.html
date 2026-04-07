@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0048)file:///C:/Users/user/Downloads/index%20(4).html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HOLIDAYS — 소싱 관리 시스템</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="./HOLIDAYS_files/chart.umd.js.다운로드"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -346,7 +346,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
 }
 </style>
 </head>
-<body>
+<body class="">
 
 <!-- TOP HEADER -->
 <header class="top-header">
@@ -356,37 +356,37 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="top-brand-sub">재고·발주 관리</div>
     </div>
     <nav class="top-tabs">
-      <button class="top-tab active" onclick="switchPage('dash',this)">대시보드</button>
-      <button class="top-tab" id="navInventory" onclick="switchPage('inventory',this);filterBrand('전체')">재고 관리</button>
-      <button class="top-tab" onclick="switchPage('orders',this)">발주 관리</button>
-      <button class="top-tab" onclick="switchPage('contacts',this)">컨택 관리</button>
-      <button class="top-tab" onclick="switchPage('notes',this)">메모</button>
-      <button class="top-tab" onclick="switchPage('sourcing',this)">소싱 원가</button>
-      <button class="top-tab" onclick="switchPage('sales',this)">매출 / 수익</button>
+      <button class="top-tab" onclick="switchPage(&#39;dash&#39;,this)">대시보드</button>
+      <button class="top-tab active" id="navInventory" onclick="switchPage(&#39;inventory&#39;,this);filterBrand(&#39;전체&#39;)">재고 관리</button>
+      <button class="top-tab" onclick="switchPage(&#39;orders&#39;,this)">발주 관리</button>
+      <button class="top-tab" onclick="switchPage(&#39;contacts&#39;,this)">컨택 관리</button>
+      <button class="top-tab" onclick="switchPage(&#39;notes&#39;,this)">메모</button>
+      <button class="top-tab" onclick="switchPage(&#39;sourcing&#39;,this)">소싱 원가</button>
+      <button class="top-tab" onclick="switchPage(&#39;sales&#39;,this)">매출 / 수익</button>
     </nav>
     <div class="top-right">
       <!-- 환율 미니 -->
       <div class="rate-mini" onclick="toggleRateDropdown()">
         <div class="rate-dot live" id="rateDot"></div>
-        <span id="rateEurMini">EUR —</span>
+        <span id="rateEurMini">EUR 1,739원</span>
         <span style="color:var(--text3)">↓</span>
       </div>
       <!-- 동기화 상태 -->
       <span style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px">
-        <span class="sync-dot" id="syncDot"></span><span id="syncLabel">연결 중...</span>
+        <span class="sync-dot" id="syncDot"></span><span id="syncLabel">Firebase 연결됨</span>
       </span>
       <!-- 관리자 -->
-      <div id="adminLockBtn">
+      <div id="adminLockBtn" style="display: none;">
         <button class="btn btn-sm" style="color:var(--accent-dark);border-color:var(--accent);font-size:12px" onclick="requestAdminUnlock()">🔐 관리자</button>
       </div>
-      <div id="adminUnlockBtn" style="display:none;gap:6px;display:none">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('pwModal'))" style="font-size:11px">비번</button>
+      <div id="adminUnlockBtn" style="gap: 6px; display: flex;">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openModal(&#39;pwModal&#39;))" style="font-size:11px">비번</button>
         <button class="btn btn-sm" style="color:var(--rtxt);font-size:12px" onclick="lockAdmin()">🔓 잠금</button>
       </div>
     </div>
   </div>
   <!-- 관리자 배너 -->
-  <div id="adminBanner" style="display:none;background:var(--gbg);color:var(--gtxt);font-size:12px;padding:5px 2rem;display:none;align-items:center;justify-content:space-between;border-top:1px solid rgba(6,95,70,0.2)">
+  <div id="adminBanner" style="background: var(--gbg); color: var(--gtxt); font-size: 12px; padding: 5px 2rem; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(6, 95, 70, 0.2);">
     <span>👑 관리자 모드 — 데이터 수정 가능</span>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="btn btn-sm edit-only" onclick="exportData()" style="font-size:11px">JSON 내보내기</button>
@@ -399,13 +399,13 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <!-- 모바일 탭 행 (720px 이하에서만 표시) -->
 <div class="mobile-tabs" id="mobileTabs">
   <div class="mobile-tabs-inner">
-    <button class="mobile-tab active" onclick="switchPage('dash',this)">대시보드</button>
-    <button class="mobile-tab" onclick="switchPage('inventory',this);filterBrand('전체')">재고</button>
-    <button class="mobile-tab" onclick="switchPage('orders',this)">발주</button>
-    <button class="mobile-tab" onclick="switchPage('contacts',this)">컨택</button>
-    <button class="mobile-tab" onclick="switchPage('notes',this)">메모</button>
-    <button class="mobile-tab" onclick="switchPage('sourcing',this)">소싱원가</button>
-    <button class="mobile-tab" onclick="switchPage('sales',this)">매출</button>
+    <button class="mobile-tab" onclick="switchPage(&#39;dash&#39;,this)">대시보드</button>
+    <button class="mobile-tab" onclick="switchPage(&#39;inventory&#39;,this);filterBrand(&#39;전체&#39;)">재고</button>
+    <button class="mobile-tab" onclick="switchPage(&#39;orders&#39;,this)">발주</button>
+    <button class="mobile-tab" onclick="switchPage(&#39;contacts&#39;,this)">컨택</button>
+    <button class="mobile-tab" onclick="switchPage(&#39;notes&#39;,this)">메모</button>
+    <button class="mobile-tab" onclick="switchPage(&#39;sourcing&#39;,this)">소싱원가</button>
+    <button class="mobile-tab" onclick="switchPage(&#39;sales&#39;,this)">매출</button>
   </div>
 </div>
 
@@ -415,45 +415,82 @@ body.viewer-mode .viewer-only{display:inline-flex}
     <span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em">실시간 환율</span>
     <button class="rate-refresh" onclick="fetchRates()">↻ 새로고침</button>
   </div>
-  <div class="rate-grid" id="rateGrid"><div style="grid-column:1/-1;font-size:12px;color:var(--text3)">불러오는 중...</div></div>
+  <div class="rate-grid" id="rateGrid"><div class="rate-item"><span class="rate-cur">EUR</span><span class="rate-val">1,739원</span></div><div class="rate-item"><span class="rate-cur">GBP</span><span class="rate-val">1,996원</span></div><div class="rate-item"><span class="rate-cur">CHF</span><span class="rate-val">1,887원</span></div><div class="rate-item"><span class="rate-cur">USD</span><span class="rate-val">1,508원</span></div><div class="rate-item"><span class="rate-cur">JPY</span><span class="rate-val">9원</span></div><div class="rate-item"><span class="rate-cur">CNY</span><span class="rate-val">219원</span></div><div class="rate-item"><span class="rate-cur">SEK</span><span class="rate-val">160원</span></div><div class="rate-item"><span class="rate-cur">DKK</span><span class="rate-val">233원</span></div></div>
   <div class="rate-footer" style="margin-top:8px">
-    <span style="font-size:10px;color:var(--text3)" id="rateSource"></span>
+    <span style="font-size:10px;color:var(--text3)" id="rateSource">ER-API·Tue, 07 Apr 2026</span>
   </div>
 </div>
 
 <!-- brandNavList (숨김 — 브랜드 탭은 메인에서 렌더링) -->
-<div id="brandNavList" style="display:none"></div>
-<div id="bc-전체" style="display:none"></div>
+<div id="brandNavList" style="display:none"><button class="brand-nav-item" onclick="switchPage(&#39;inventory&#39;,document.getElementById(&#39;navInventory&#39;));filterBrand(&#39;홈리빙&#39;)">
+      <span>🇯🇵 홈리빙</span>
+      <span class="brand-count">1</span>
+    </button><button class="brand-nav-item" onclick="switchPage(&#39;inventory&#39;,document.getElementById(&#39;navInventory&#39;));filterBrand(&#39;Hair Acc&#39;)">
+      <span>🇩🇪 Hair Acc</span>
+      <span class="brand-count">1</span>
+    </button><button class="brand-nav-item" onclick="switchPage(&#39;inventory&#39;,document.getElementById(&#39;navInventory&#39;));filterBrand(&#39;생활용품&#39;)">
+      <span>🇮🇹 생활용품</span>
+      <span class="brand-count">2</span>
+    </button></div>
+<div id="bc-전체" style="display:none">4</div>
 
 <!-- MAIN -->
 <main class="main">
 
   <!-- 대시보드 -->
-  <div id="page-dash" class="page active">
+  <div id="page-dash" class="page">
     <div class="page-header">
-      <div><div class="page-title">대시보드</div><div class="page-desc" id="dashDate"></div></div>
+      <div><div class="page-title">대시보드</div><div class="page-desc" id="dashDate">2026년 4월 현황</div></div>
     </div>
     <div id="dashAlert"></div>
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-l">총 제품 수</div><div class="kpi-v" id="kProducts">0</div><div class="kpi-s">등록된 SKU</div></div>
-      <div class="kpi"><div class="kpi-l">총 옵션 수</div><div class="kpi-v" id="kVariants">0</div><div class="kpi-s">색상 / 사이즈 등</div></div>
+      <div class="kpi"><div class="kpi-l">총 제품 수</div><div class="kpi-v" id="kProducts">4</div><div class="kpi-s">등록된 SKU</div></div>
+      <div class="kpi"><div class="kpi-l">총 옵션 수</div><div class="kpi-v" id="kVariants">19</div><div class="kpi-s">색상 / 사이즈 등</div></div>
       <div class="kpi"><div class="kpi-l">재고 부족</div><div class="kpi-v" id="kLow">0</div><div class="kpi-s">안전재고 미달</div></div>
       <div class="kpi"><div class="kpi-l">이번 달 매출</div><div class="kpi-v" id="kSales">₩0</div><div class="kpi-s" id="kSalesSub">출고 0건</div></div>
-      <div class="kpi"><div class="kpi-l">이번 달 수익</div><div class="kpi-v" id="kProfit">₩0</div><div class="kpi-s" id="kProfitSub">마진율 -</div></div>
+      <div class="kpi"><div class="kpi-l">이번 달 수익</div><div class="kpi-v" id="kProfit">₩0</div><div class="kpi-s" id="kProfitSub">마진율 0%</div></div>
     </div>
 
     <!-- 발주 현황 -->
     <div class="card" style="margin-bottom:1rem">
       <div class="card-title" style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center">
-        <span>발주 현황 <span id="dashOrderDate" style="font-weight:400;color:var(--text3);font-size:11px;margin-left:6px"></span></span>
-        <span id="dashOrderTotal" style="font-size:13px;font-weight:700;color:var(--accent-dark)"></span>
+        <span>발주 현황 <span id="dashOrderDate" style="font-weight:400;color:var(--text3);font-size:11px;margin-left:6px">2026.04.07 기준</span></span>
+        <span id="dashOrderTotal" style="font-size:13px;font-weight:700;color:var(--accent-dark)">
+      <span style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:12px;font-weight:500;color:var(--atxt);background:var(--abg);padding:3px 12px;border-radius:99px">발주예정 ₩0 (0건)</span>
+        <span style="font-size:12px;font-weight:500;color:var(--gtxt);background:var(--gbg);padding:3px 12px;border-radius:99px">발주완료 ₩14,639,510 (4건)</span>
+      </span></span>
       </div>
-      <div id="dashOrders"></div>
+      <div id="dashOrders"><div class="empty">발주 내역이 없습니다</div></div>
     </div>
 
     <div class="row2">
-      <div class="card"><div class="card-title">재고 현황</div><div id="dashStock"></div></div>
-      <div class="card"><div class="card-title">최근 입출고</div><div id="dashLogs"></div></div>
+      <div class="card"><div class="card-title">재고 현황</div><div id="dashStock"><div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+          <span style="font-weight:600">소레카라시계</span>
+          <span style="color:var(--text3)">72개 · 2옵션</span>
+        </div>
+        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
+      </div><div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+          <span style="font-weight:600">CLINQ</span>
+          <span style="color:var(--text3)">80개 · 8옵션</span>
+        </div>
+        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
+      </div><div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+          <span style="font-weight:600">Lorenzi Toothpaste squeezer</span>
+          <span style="color:var(--text3)">20개 · 2옵션</span>
+        </div>
+        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
+      </div><div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+          <span style="font-weight:600">IMPREGNA ASTIC BRILLE</span>
+          <span style="color:var(--text3)">210개 · 7옵션</span>
+        </div>
+        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
+      </div></div></div>
+      <div class="card"><div class="card-title">최근 입출고</div><div id="dashLogs"><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">IMPREGNA ASTIC BRILLE</span><span style="color:var(--text3)">2개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">Lorenzi Toothpaste squeezer · Clear</span><span style="color:var(--text3)">10개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">Lorenzi Toothpaste squeezer · Clear</span><span style="color:var(--text3)">10개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">CLINQ · SUKI – Silver</span><span style="color:var(--text3)">10개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">소레카라시계</span><span style="color:var(--text3)">36개</span><span style="color:var(--text3);font-size:12px">04-03</span></div></div></div>
     </div>
     <div class="card">
       <div class="card-title">월별 매출 · 수익</div>
@@ -461,12 +498,12 @@ body.viewer-mode .viewer-only{display:inline-flex}
         <span class="legend-item"><span class="legend-dot" style="background:#38bdf8"></span>매출</span>
         <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>수익</span>
       </div>
-      <div style="position:relative;height:220px"><canvas id="dashChart"></canvas></div>
+      <div style="position:relative;height:220px"><canvas id="dashChart" style="box-sizing: border-box; display: block; height: 220px; width: 1498px;" width="2248" height="330"></canvas></div>
     </div>
   </div>
 
   <!-- 재고 관리 -->
-  <div id="page-inventory" class="page">
+  <div id="page-inventory" class="page active">
     <div class="page-header">
       <div>
         <div class="page-title" id="invPageTitle">재고 관리</div>
@@ -478,14 +515,62 @@ body.viewer-mode .viewer-only{display:inline-flex}
       </div>
     </div>
     <!-- 브랜드 탭 -->
-    <div class="brand-tabs" id="brandTabs"></div>
+    <div class="brand-tabs" id="brandTabs"><button class="brand-tab active" onclick="filterBrand(&#39;전체&#39;)">전체 (4)</button><button class="brand-tab" onclick="filterBrand(&#39;홈리빙&#39;)">🇯🇵 홈리빙 <span style="opacity:0.6">(1)</span></button><button class="brand-tab" onclick="filterBrand(&#39;Hair Acc&#39;)">🇩🇪 Hair Acc <span style="opacity:0.6">(1)</span></button><button class="brand-tab" onclick="filterBrand(&#39;생활용품&#39;)">🇮🇹 생활용품 <span style="opacity:0.6">(2)</span></button></div>
     <div class="card tbl-wrap">
       <table id="invTable">
         <thead><tr>
           <th style="width:32%">제품명</th><th>소싱국가</th>
           <th>총재고</th><th>옵션수</th><th>원가(KRW)</th><th>판매가</th><th>마진율</th><th>관리</th>
         </tr></thead>
-        <tbody id="invBody"><tr><td colspan="9"><div class="empty">데이터 불러오는 중...</div></td></tr></tbody>
+        <tbody id="invBody"><tr class="product-row" onclick="toggleProduct(&#39;p1775229917762&#39;)">
+      <td><span class="expand-icon ">▶</span>소레카라시계 <span class="badge b-accent" style="font-size:10px">2옵션</span></td>
+      <td>🇯🇵 일본</td>
+      <td><strong>72</strong></td>
+      <td>2</td>
+      <td>₩46,440</td>
+      <td>₩80,000</td>
+      <td><span class="badge b-warn">42%</span></td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775229917762&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775229917762&#39;))">삭제</button>
+      </td>
+    </tr><tr class="product-row" onclick="toggleProduct(&#39;p1775438677562&#39;)">
+      <td><span class="expand-icon ">▶</span>CLINQ <span class="badge b-accent" style="font-size:10px">8옵션</span></td>
+      <td>🇩🇪 독일</td>
+      <td><strong>80</strong></td>
+      <td>8</td>
+      <td>₩20,833</td>
+      <td>₩1</td>
+      <td>-</td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775438677562&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775438677562&#39;))">삭제</button>
+      </td>
+    </tr><tr class="product-row" onclick="toggleProduct(&#39;p1775438936369&#39;)">
+      <td><span class="expand-icon ">▶</span>Lorenzi Toothpaste squeezer <span class="badge b-accent" style="font-size:10px">2옵션</span></td>
+      <td>🇮🇹 이탈리아</td>
+      <td><strong>20</strong></td>
+      <td>2</td>
+      <td>₩489,502</td>
+      <td>₩1,000,000</td>
+      <td><span class="badge b-ok">51%</span></td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775438936369&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775438936369&#39;))">삭제</button>
+      </td>
+    </tr><tr class="product-row" onclick="toggleProduct(&#39;p1775439408430&#39;)">
+      <td><span class="expand-icon ">▶</span>IMPREGNA ASTIC BRILLE <span class="badge b-accent" style="font-size:10px">7옵션</span></td>
+      <td>🇫🇷 프랑스</td>
+      <td><strong>420</strong></td>
+      <td>7</td>
+      <td>₩12,194</td>
+      <td>₩950</td>
+      <td>-</td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775439408430&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775439408430&#39;))">삭제</button>
+      </td>
+    </tr></tbody>
       </table>
     </div>
 
@@ -499,7 +584,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         <br>옵션 없으면: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">아로마 캔들, 50, 8.5, 35000, 프랑스</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="quickInput" placeholder="제품명, 옵션명(선택), 수량, 원가EUR, 판매가KRW, 국가" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickInput()">
+        <input type="text" id="quickInput" placeholder="제품명, 옵션명(선택), 수량, 원가EUR, 판매가KRW, 국가" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key===&#39;Enter&#39;)submitQuickInput()">
         <button class="btn btn-primary" onclick="submitQuickInput()" style="white-space:nowrap;padding:11px 18px">등록 ↵</button>
       </div>
       <div id="quickResult" style="margin-top:8px;font-size:12px;color:var(--text3)"></div>
@@ -510,7 +595,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-sourcing" class="page">
     <div class="page-header">
       <div><div class="page-title">소싱 원가 계산</div><div class="page-desc">현지가 → 환율 → 관세 → 국내 단가 자동 계산</div></div>
-      <div id="sourcingEurBadge"></div>
+      <div id="sourcingEurBadge"><span class="badge b-accent">EUR 1,739원</span></div>
     </div>
     <div class="row2">
       <div class="card">
@@ -551,7 +636,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         </div>
         <div class="calc-box">
           <div class="calc-row"><span class="calc-lbl">현지 매입 합계 (KRW)</span><span id="rLocal">-</span></div>
-          <div class="calc-row"><span class="calc-lbl">관세</span><span id="rTariff">-</span></div>
+          <div class="calc-row"><span class="calc-lbl">관세</span><span id="rTariff">해당없음</span></div>
           <div class="calc-row"><span class="calc-lbl">부가세</span><span id="rVat">-</span></div>
           <div class="calc-row"><span class="calc-lbl">배송 + 기타</span><span id="rShip">-</span></div>
           <div class="calc-row"><span>단위 원가 (1개)</span><span id="rUnit">-</span></div>
@@ -575,11 +660,113 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-orders" class="page">
     <div class="page-header">
       <div><div class="page-title">발주 관리</div><div class="page-desc">해외 발주 및 입고 예정</div></div>
-      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>openOrderModal())">+ 발주 등록</button>
+      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal())">+ 발주 등록</button>
     </div>
     <div class="card tbl-wrap"><table>
       <thead><tr><th>발주일</th><th>공급사</th><th>국가</th><th>주문금액</th><th>통화</th><th>원화환산</th><th>배송방식</th><th>예상입고</th><th>진행상태</th><th>메모</th><th></th></tr></thead>
-      <tbody id="orderBody"><tr><td colspan="11"><div class="empty">불러오는 중...</div></td></tr></tbody>
+      <tbody id="orderBody"><tr>
+      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
+      <td style="font-weight:700">Lorenzi</td>
+      <td>🇮🇹 이탈리아</td>
+      <td style="font-weight:600;white-space:nowrap">€3,135</td>
+      <td><span class="badge b-info" style="font-size:10px">EUR</span></td>
+      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩5,461,170</td>
+      <td style="font-size:12px">DHL</td>
+      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-24</td>
+      <td>
+        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447564354&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
+          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment">결제 대기</option><option value="shipping" selected="">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
+        </select>
+        <span class="badge b-accent" style="font-size:11px">
+          배송중
+        </span>
+      </td>
+      <td style="font-size:12px;color:var(--text3)">빠른입력</td>
+      <td style="display:flex;gap:4px;white-space:nowrap">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447564354&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447564354&#39;))">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
+      <td style="font-weight:700">CLINQ</td>
+      <td>🇩🇪 독일</td>
+      <td style="font-weight:600;white-space:nowrap">€3,310</td>
+      <td><span class="badge b-info" style="font-size:10px">EUR</span></td>
+      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩5,766,020</td>
+      <td style="font-size:12px">DHL</td>
+      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-23</td>
+      <td>
+        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447605139&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
+          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment">결제 대기</option><option value="shipping" selected="">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
+        </select>
+        <span class="badge b-accent" style="font-size:11px">
+          배송중
+        </span>
+      </td>
+      <td style="font-size:12px;color:var(--text3)">배송2번나눠예정</td>
+      <td style="display:flex;gap:4px;white-space:nowrap">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447605139&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447605139&#39;))">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
+      <td style="font-weight:700">IMPREGNA Astic Brille</td>
+      <td>🇫🇷 프랑스</td>
+      <td style="font-weight:600;white-space:nowrap">€656.9</td>
+      <td><span class="badge b-info" style="font-size:10px">EUR</span></td>
+      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩1,144,320</td>
+      <td style="font-size:12px">EXW (직접 픽업)</td>
+      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-28</td>
+      <td>
+        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447618806&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
+          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment">결제 대기</option><option value="shipping" selected="">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
+        </select>
+        <span class="badge b-accent" style="font-size:11px">
+          배송중
+        </span>
+      </td>
+      <td style="font-size:12px;color:var(--text3)">빠른입력</td>
+      <td style="display:flex;gap:4px;white-space:nowrap">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447618806&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447618806&#39;))">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
+      <td style="font-weight:700">Sorekara</td>
+      <td>🇯🇵 일본</td>
+      <td style="font-weight:600;white-space:nowrap">¥252,000</td>
+      <td><span class="badge b-info" style="font-size:10px">JPY</span></td>
+      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩2,268,000</td>
+      <td style="font-size:12px">EMS</td>
+      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-27</td>
+      <td>
+        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447774405&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
+          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment" selected="">결제 대기</option><option value="shipping">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
+        </select>
+        <span class="badge b-warn" style="font-size:11px">
+          결제 대기
+        </span>
+      </td>
+      <td style="font-size:12px;color:var(--text3)">독점계약+최종인보이스 이번주</td>
+      <td style="display:flex;gap:4px;white-space:nowrap">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447774405&#39;))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447774405&#39;))">삭제</button>
+      </td>
+    </tr><tr style="background:var(--bg2)">
+    <td colspan="5" style="text-align:right;color:var(--text3);font-size:12px;padding:10px 12px">발주 예정 <span style="font-size:10px;opacity:0.7">(대기중)</span></td>
+    <td style="padding:10px 12px;font-weight:600;color:var(--atxt)">₩0</td>
+    <td colspan="5"></td>
+  </tr>
+  <tr style="background:var(--bg2)">
+    <td colspan="5" style="text-align:right;color:var(--text3);font-size:12px;padding:6px 12px">발주 완료 <span style="font-size:10px;opacity:0.7">(준비완료·결제·배송·입고)</span></td>
+    <td style="padding:6px 12px;font-weight:600;color:var(--gtxt)">₩14,639,510</td>
+    <td colspan="5"></td>
+  </tr>
+  <tr style="background:var(--bg3);border-top:1px solid var(--border2)">
+    <td colspan="5" style="text-align:right;color:var(--text2);font-size:12px;font-weight:700;padding:10px 12px">총 합계 (취소 제외)</td>
+    <td style="padding:10px 12px;font-weight:700;font-size:15px;color:var(--accent-dark)">₩14,639,510</td>
+    <td colspan="5"></td>
+  </tr></tbody>
     </table></div>
 
     <!-- 발주 빠른 입력 -->
@@ -592,7 +779,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         상태: 대기중 / 주문준비완료 / 결제대기 / 배송중 / 입고완료
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="quickOrderInput" placeholder="공급사, 국가, 금액, 통화, 배송방식, 상태, 수량" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickOrder()">
+        <input type="text" id="quickOrderInput" placeholder="공급사, 국가, 금액, 통화, 배송방식, 상태, 수량" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key===&#39;Enter&#39;)submitQuickOrder()">
         <button class="btn btn-primary" onclick="submitQuickOrder()" style="padding:11px 18px;white-space:nowrap">등록 ↵</button>
       </div>
       <div id="quickOrderResult" style="margin-top:8px;font-size:12px;color:var(--text3)"></div>
@@ -603,7 +790,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-contacts" class="page">
     <div class="page-header">
       <div><div class="page-title">컨택 관리</div><div class="page-desc">소싱 브랜드 컨택 현황 및 특이사항</div></div>
-      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>openContactModal())">+ 컨택 등록</button>
+      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=&gt;openContactModal())">+ 컨택 등록</button>
     </div>
 
     <!-- 빠른 입력 -->
@@ -614,7 +801,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         예: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">Clinq, 독일, 헤어ACC, TIA/NELE/LYA, MOQ 10개 Silver만, 진행중</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="quickContactInput" placeholder="브랜드, 국가, 주요품목, 소싱품목, 특이사항, 상태" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickContact()">
+        <input type="text" id="quickContactInput" placeholder="브랜드, 국가, 주요품목, 소싱품목, 특이사항, 상태" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key===&#39;Enter&#39;)submitQuickContact()">
         <button class="btn btn-primary" onclick="submitQuickContact()" style="padding:11px 18px;white-space:nowrap">등록 ↵</button>
       </div>
       <div id="quickContactResult" style="margin-top:8px;font-size:12px"></div>
@@ -641,18 +828,25 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="notes-sidebar">
         <div class="notes-sidebar-header">
           <span class="notes-sidebar-title">메모 목록</span>
-          <span id="notesCount" style="font-size:11px;color:var(--text3)">0개</span>
+          <span id="notesCount" style="font-size:11px;color:var(--text3)">1개</span>
         </div>
         <!-- 태그 필터 -->
         <div style="padding:8px 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap">
-          <button class="note-tag-btn selected" id="filterAll" onclick="filterNotes('전체')">전체</button>
-          <button class="note-tag-btn" id="filter소싱" onclick="filterNotes('소싱')">소싱</button>
-          <button class="note-tag-btn" id="filter발주" onclick="filterNotes('발주')">발주</button>
-          <button class="note-tag-btn" id="filter미팅" onclick="filterNotes('미팅')">미팅</button>
-          <button class="note-tag-btn" id="filter아이디어" onclick="filterNotes('아이디어')">아이디어</button>
-          <button class="note-tag-btn" id="filter기타" onclick="filterNotes('기타')">기타</button>
+          <button class="note-tag-btn selected" id="filterAll" onclick="filterNotes(&#39;전체&#39;)">전체</button>
+          <button class="note-tag-btn" id="filter소싱" onclick="filterNotes(&#39;소싱&#39;)">소싱</button>
+          <button class="note-tag-btn" id="filter발주" onclick="filterNotes(&#39;발주&#39;)">발주</button>
+          <button class="note-tag-btn" id="filter미팅" onclick="filterNotes(&#39;미팅&#39;)">미팅</button>
+          <button class="note-tag-btn" id="filter아이디어" onclick="filterNotes(&#39;아이디어&#39;)">아이디어</button>
+          <button class="note-tag-btn" id="filter기타" onclick="filterNotes(&#39;기타&#39;)">기타</button>
         </div>
-        <div class="notes-list" id="notesList"></div>
+        <div class="notes-list" id="notesList"><div class="note-item" onclick="openNote(&#39;note1775531759038&#39;)">
+      <div class="note-item-date">
+        <span>2026-04-07</span>
+        <span class="note-tag note-tag-발주">발주</span>
+      </div>
+      <div class="note-item-title">2026-04-07</div>
+      <div class="note-item-preview">sorekara 독점계약서 전자문서 요청. 이번주내로 final invo</div>
+    </div></div>
       </div>
       <!-- 오른쪽: 에디터 -->
       <div class="notes-editor" id="notesEditor">
@@ -687,7 +881,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <div class="modal-overlay" id="contactModal">
   <div class="modal">
     <div class="modal-title" id="contactModalTitle">컨택 등록</div>
-    <button class="modal-close" onclick="closeModal('contactModal')">✕</button>
+    <button class="modal-close" onclick="closeModal(&#39;contactModal&#39;)">✕</button>
     <div class="form-row">
       <div class="fg"><label>브랜드명 *</label><input type="text" id="ctBrand" placeholder="예: Clinq"></div>
       <div class="fg"><label>국가</label>
@@ -716,7 +910,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       </select>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal('contactModal')">취소</button>
+      <button class="btn" onclick="closeModal(&#39;contactModal&#39;)">취소</button>
       <button class="btn btn-primary" onclick="saveContact()">저장하기</button>
     </div>
   </div>
@@ -726,12 +920,12 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <div class="modal-overlay" id="adminAuthModal">
   <div class="modal" style="max-width:380px">
     <div class="modal-title">🔐 관리자 인증</div>
-    <button class="modal-close" onclick="closeModal('adminAuthModal')">✕</button>
+    <button class="modal-close" onclick="closeModal(&#39;adminAuthModal&#39;)">✕</button>
     <div style="font-size:13px;color:var(--text2);margin-bottom:1rem">데이터를 수정하려면 관리자 비밀번호가 필요합니다</div>
     <div id="adminAuthError" class="login-error"></div>
     <div class="fg" style="margin-bottom:12px">
       <label>관리자 비밀번호</label>
-      <input type="password" id="adminAuthPw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')submitAdminAuth()">
+      <input type="password" id="adminAuthPw" placeholder="비밀번호 입력" onkeydown="if(event.key===&#39;Enter&#39;)submitAdminAuth()">
     </div>
     <button class="btn btn-primary" style="width:100%;padding:10px" onclick="submitAdminAuth()">확인</button>
     <div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center">초기 비밀번호: <strong>holidays1234</strong></div>
@@ -742,21 +936,21 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <div class="modal-overlay" id="pwModal">
   <div class="modal">
     <div class="modal-title">비밀번호 설정</div>
-    <button class="modal-close" onclick="closeModal('pwModal')">✕</button>
+    <button class="modal-close" onclick="closeModal(&#39;pwModal&#39;)">✕</button>
     <div class="sec-div">관리자 비밀번호 변경</div>
     <div class="fg" style="margin-bottom:10px"><label>현재 비밀번호</label><input type="password" id="pwCurMaster"></div>
     <div class="fg" style="margin-bottom:10px"><label>새 비밀번호 (6자 이상)</label><input type="password" id="pwNewMaster"></div>
     <div class="fg" style="margin-bottom:14px"><label>새 비밀번호 확인</label><input type="password" id="pwNewMaster2"></div>
     <button class="btn btn-primary" style="width:100%" onclick="changeMasterPw()">변경하기</button>
-    <div class="modal-foot"><button class="btn" onclick="closeModal('pwModal')">닫기</button></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal(&#39;pwModal&#39;)">닫기</button></div>
   </div>
 </div>
 
 <!-- 제품 등록/수정 모달 -->
 <div class="modal-overlay" id="productModal">
   <div class="modal" style="max-width:620px">
-    <div class="modal-title" id="productModalTitle">제품 등록</div>
-    <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+    <div class="modal-title" id="productModalTitle">제품 수정</div>
+    <button class="modal-close" onclick="closeModal(&#39;productModal&#39;)">✕</button>
     <div class="sec-div">기본 정보</div>
     <div class="form-row">
       <div class="fg"><label>제품명 *</label><input type="text" id="pmName" placeholder="예: Clinq TIA"></div>
@@ -791,12 +985,60 @@ body.viewer-mode .viewer-only{display:inline-flex}
           <span style="width:24px"></span>
         </span>
       </div>
-      <div id="variantList"></div>
+      <div id="variantList"><div class="variant-item" data-vid="v1775438677562">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="SUKI – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div><div class="variant-item" data-vid="v1775438720250">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="TIA – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="10" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div><div class="variant-item" data-vid="v1775438739307bmwd">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="NELE – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div><div class="variant-item" data-vid="v1775438743561vmhq">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="LYA – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div><div class="variant-item" data-vid="v177543874908580e3">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="MIRA – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div><div class="variant-item" data-vid="v1775438754023co1d">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="AREA – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div><div class="variant-item" data-vid="v17754387581095k5a">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="SANA – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div><div class="variant-item" data-vid="v17754387670475j50">
+    <input type="text" placeholder="옵션명 (예: Silver)" value="TALA – Silver">
+    <input type="number" placeholder="재고" value="10" style="text-align:center">
+    <input type="number" placeholder="원가" value="" style="text-align:right">
+    <input type="number" placeholder="판매가" value="" style="text-align:right">
+    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
+  </div></div>
       <button class="add-variant-editor-btn" onclick="addVariantRow()">+ 옵션 추가</button>
     </div>
 
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal('productModal')">취소</button>
+      <button class="btn" onclick="closeModal(&#39;productModal&#39;)">취소</button>
       <button class="btn btn-primary" onclick="saveProduct()">저장하기</button>
     </div>
   </div>
@@ -806,7 +1048,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <div class="modal-overlay" id="stockModal">
   <div class="modal">
     <div class="modal-title">입 / 출고 처리</div>
-    <button class="modal-close" onclick="closeModal('stockModal')">✕</button>
+    <button class="modal-close" onclick="closeModal(&#39;stockModal&#39;)">✕</button>
     <div class="form-row">
       <div class="fg"><label>제품 선택 *</label><select id="stProduct" style="width:100%" onchange="updateStockVariants()"></select></div>
       <div class="fg"><label>옵션 선택</label><select id="stVariant" style="width:100%"></select></div>
@@ -822,7 +1064,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="fg"><label>메모</label><input type="text" id="stMemo" placeholder="선택사항"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal('stockModal')">취소</button>
+      <button class="btn" onclick="closeModal(&#39;stockModal&#39;)">취소</button>
       <button class="btn btn-primary" onclick="saveStock()">처리하기</button>
     </div>
   </div>
@@ -831,8 +1073,8 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <!-- 발주 모달 -->
 <div class="modal-overlay" id="orderModal">
   <div class="modal">
-    <div class="modal-title" id="orderModalTitle">발주 등록</div>
-    <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
+    <div class="modal-title" id="orderModalTitle">발주 수정</div>
+    <button class="modal-close" onclick="closeModal(&#39;orderModal&#39;)">✕</button>
     <div class="form-row">
       <div class="fg"><label>공급사 (브랜드) *</label><input type="text" id="orName" placeholder="예: CLINQ, Lorenzi"></div>
       <div class="fg"><label>공급 국가</label>
@@ -889,7 +1131,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="fg"><label>메모</label><input type="text" id="orMemo" placeholder="추가 메모"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal('orderModal')">취소</button>
+      <button class="btn" onclick="closeModal(&#39;orderModal&#39;)">취소</button>
       <button class="btn btn-primary" onclick="saveOrder()">저장하기</button>
     </div>
   </div>
@@ -956,7 +1198,6 @@ function renderAll(){
   if(ap==='page-inventory')renderInventory();
   if(ap==='page-sourcing')renderSourcing();
   if(ap==='page-sales')renderSales();
-  if(ap==='page-orders')renderOrders();
 }
 
 /* ── 브랜드 필터 ── */
@@ -2203,5 +2444,6 @@ startListeners();
 fetchRates();
 setInterval(()=>fetchRates(),60*60*1000);
 </script>
-</body>
-</html>
+
+
+</body></html>
