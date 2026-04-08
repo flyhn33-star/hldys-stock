@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HOLIDAYS — 소싱 관리 시스템</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -476,7 +475,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <label class="btn edit-only" style="cursor:pointer" title="엑셀 파일로 일괄 등록">
           📥 엑셀 업로드
-          <input type="file" accept=".xlsx,.xls,.csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
+          <input type="file" accept=".csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
         </label>
         <button class="btn edit-only" onclick="requestAdminUnlock(openProductModal)">+ 제품 등록</button>
         <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(openStockModal)">입 / 출고 처리</button>
@@ -508,7 +507,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <label class="btn btn-primary" style="cursor:pointer">
           파일 선택 및 업로드
-          <input type="file" accept=".xlsx,.xls,.csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
+          <input type="file" accept=".csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
         </label>
         <button class="btn" onclick="downloadExcelTemplate()">📄 템플릿 다운로드</button>
         <span id="excelUploadStatus" style="font-size:12px;color:var(--text3)"></span>
@@ -1610,38 +1609,6 @@ function renderProductRow(p){
   return html;
 }
 
-    if(isExpanded){
-      vs.forEach(v=>{
-        const st=variantSt(v,p.safeQty||5);
-        const vm=pct(v.priceKrw-v.costKrw,v.priceKrw);
-        const vmc=vm>=50?'b-ok':vm>=30?'b-warn':'b-low';
-        html+=`<tr class="variant-row">
-          <td style="padding-left:52px"><span class="variant-name"><span class="variant-dot"></span>${v.name}</span></td>
-          <td></td>
-          <td>
-            <div style="display:flex;align-items:center;gap:6px">
-              <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',-1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">−</button>
-              <span id="qty-${p.id}-${v.id}" style="font-weight:600;min-width:28px;text-align:center;cursor:pointer;padding:2px 4px;border-radius:4px" class="edit-only" onclick="requestAdminUnlock(()=>inlineQtyEdit('${p.id}','${v.id}',${v.qty}))" title="클릭하여 직접 수정">${v.qty}</span>
-              <span class="viewer-only" style="font-weight:600">${v.qty}</span>
-              <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">+</button>
-              <span class="badge ${st.cls}" style="font-size:10px">${st.label}</span>
-            </div>
-          </td>
-          <td></td>
-          <td>${v.costKrw?won(v.costKrw):'-'}</td>
-          <td>${v.priceKrw?won(v.priceKrw):'-'}</td>
-          <td>${vm>0?`<span class="badge ${vmc}">${vm}%</span>`:'-'}</td>
-          <td></td>
-        </tr>`;
-      });
-      html+=`<tr class="add-variant-row"><td colspan="8" style="padding-left:52px">
-        <button class="add-variant-btn edit-only" onclick="requestAdminUnlock(()=>openEditProductModal('${p.id}'))">+ 옵션 추가 / 수정</button>
-      </td></tr>`;
-    }
-  });
-  tb.innerHTML=html;
-}
-
 window.toggleProduct=function(id){
   if(expandedRows.has(id))expandedRows.delete(id);else expandedRows.add(id);
   renderInventory();
@@ -2740,20 +2707,28 @@ window.importExcel=async function(event){
   reader.onload=async e=>{
     try{
       let rows=[];
-      // CSV vs Excel 분기
-      if(file.name.endsWith('.csv')){
-        const text=e.target.result;
-        const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
-        const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
-        rows=lines.slice(1).map(line=>{
-          const vals=line.split(',').map(v=>v.trim().replace(/^"|"$/g,''));
-          const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;
-        });
-      }else{
-        const wb=XLSX.read(e.target.result,{type:'array'});
-        const ws=wb.Sheets[wb.SheetNames[0]];
-        rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-      }
+      // CSV만 지원 (xlsx 라이브러리 제거)
+      const text=typeof e.target.result==='string'?e.target.result:new TextDecoder('utf-8').decode(e.target.result);
+      // BOM 제거
+      const cleaned=text.replace(/^\uFEFF/,'');
+      const lines=cleaned.split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+      if(!lines.length){if(status)status.textContent='❌ 데이터가 없습니다';return;}
+      // CSV 파싱 (따옴표 지원)
+      const parseCSVLine=line=>{
+        const res=[];let cur='';let inQ=false;
+        for(let i=0;i<line.length;i++){
+          const c=line[i];
+          if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+          else if(c===','&&!inQ){res.push(cur.trim());cur='';}
+          else cur+=c;
+        }
+        res.push(cur.trim());return res;
+      };
+      const headers=parseCSVLine(lines[0]);
+      rows=lines.slice(1).map(line=>{
+        const vals=parseCSVLine(line);
+        const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;
+      });
 
       if(!rows.length){if(status)status.textContent='❌ 데이터가 없습니다';return;}
 
@@ -2843,11 +2818,9 @@ window.importExcel=async function(event){
       if(status)status.innerHTML=`<span style="color:var(--rtxt)">❌ 오류: ${err.message}</span>`;
     }
   };
-  if(file.name.endsWith('.csv'))reader.readAsText(file,'utf-8');
-  else reader.readAsArrayBuffer(file);
+  reader.readAsText(file,'utf-8');
 };
 
-/* ── 엑셀 템플릿 다운로드 ── */
 /* ── 템플릿 다운로드 (CSV) ── */
 window.downloadExcelTemplate=function(){
   const headers=['브랜드','제품명','옵션명','수량','원가','통화','판매가','소싱국가','카테고리','안전재고'];
