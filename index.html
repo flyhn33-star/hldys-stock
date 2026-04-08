@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///C:/Users/user/Downloads/index%20(4).html -->
-<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HOLIDAYS — 소싱 관리 시스템</title>
-<script src="./HOLIDAYS_files/chart.umd.js.다운로드"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -346,7 +347,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
 }
 </style>
 </head>
-<body class="">
+<body>
 
 <!-- TOP HEADER -->
 <header class="top-header">
@@ -356,37 +357,37 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="top-brand-sub">재고·발주 관리</div>
     </div>
     <nav class="top-tabs">
-      <button class="top-tab" onclick="switchPage(&#39;dash&#39;,this)">대시보드</button>
-      <button class="top-tab active" id="navInventory" onclick="switchPage(&#39;inventory&#39;,this);filterBrand(&#39;전체&#39;)">재고 관리</button>
-      <button class="top-tab" onclick="switchPage(&#39;orders&#39;,this)">발주 관리</button>
-      <button class="top-tab" onclick="switchPage(&#39;contacts&#39;,this)">컨택 관리</button>
-      <button class="top-tab" onclick="switchPage(&#39;notes&#39;,this)">메모</button>
-      <button class="top-tab" onclick="switchPage(&#39;sourcing&#39;,this)">소싱 원가</button>
-      <button class="top-tab" onclick="switchPage(&#39;sales&#39;,this)">매출 / 수익</button>
+      <button class="top-tab active" onclick="switchPage('dash',this)">대시보드</button>
+      <button class="top-tab" id="navInventory" onclick="switchPage('inventory',this);filterBrand('전체')">재고 관리</button>
+      <button class="top-tab" onclick="switchPage('orders',this)">발주 관리</button>
+      <button class="top-tab" onclick="switchPage('contacts',this)">컨택 관리</button>
+      <button class="top-tab" onclick="switchPage('notes',this)">메모</button>
+      <button class="top-tab" onclick="switchPage('sourcing',this)">소싱 원가</button>
+      <button class="top-tab" onclick="switchPage('sales',this)">매출 / 수익</button>
     </nav>
     <div class="top-right">
       <!-- 환율 미니 -->
       <div class="rate-mini" onclick="toggleRateDropdown()">
         <div class="rate-dot live" id="rateDot"></div>
-        <span id="rateEurMini">EUR 1,739원</span>
+        <span id="rateEurMini">EUR —</span>
         <span style="color:var(--text3)">↓</span>
       </div>
       <!-- 동기화 상태 -->
       <span style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px">
-        <span class="sync-dot" id="syncDot"></span><span id="syncLabel">Firebase 연결됨</span>
+        <span class="sync-dot" id="syncDot"></span><span id="syncLabel">연결 중...</span>
       </span>
       <!-- 관리자 -->
-      <div id="adminLockBtn" style="display: none;">
+      <div id="adminLockBtn">
         <button class="btn btn-sm" style="color:var(--accent-dark);border-color:var(--accent);font-size:12px" onclick="requestAdminUnlock()">🔐 관리자</button>
       </div>
-      <div id="adminUnlockBtn" style="gap: 6px; display: flex;">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openModal(&#39;pwModal&#39;))" style="font-size:11px">비번</button>
+      <div id="adminUnlockBtn" style="display:none;gap:6px;display:none">
+        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('pwModal'))" style="font-size:11px">비번</button>
         <button class="btn btn-sm" style="color:var(--rtxt);font-size:12px" onclick="lockAdmin()">🔓 잠금</button>
       </div>
     </div>
   </div>
   <!-- 관리자 배너 -->
-  <div id="adminBanner" style="background: var(--gbg); color: var(--gtxt); font-size: 12px; padding: 5px 2rem; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(6, 95, 70, 0.2);">
+  <div id="adminBanner" style="display:none;background:var(--gbg);color:var(--gtxt);font-size:12px;padding:5px 2rem;display:none;align-items:center;justify-content:space-between;border-top:1px solid rgba(6,95,70,0.2)">
     <span>👑 관리자 모드 — 데이터 수정 가능</span>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="btn btn-sm edit-only" onclick="exportData()" style="font-size:11px">JSON 내보내기</button>
@@ -399,13 +400,13 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <!-- 모바일 탭 행 (720px 이하에서만 표시) -->
 <div class="mobile-tabs" id="mobileTabs">
   <div class="mobile-tabs-inner">
-    <button class="mobile-tab" onclick="switchPage(&#39;dash&#39;,this)">대시보드</button>
-    <button class="mobile-tab" onclick="switchPage(&#39;inventory&#39;,this);filterBrand(&#39;전체&#39;)">재고</button>
-    <button class="mobile-tab" onclick="switchPage(&#39;orders&#39;,this)">발주</button>
-    <button class="mobile-tab" onclick="switchPage(&#39;contacts&#39;,this)">컨택</button>
-    <button class="mobile-tab" onclick="switchPage(&#39;notes&#39;,this)">메모</button>
-    <button class="mobile-tab" onclick="switchPage(&#39;sourcing&#39;,this)">소싱원가</button>
-    <button class="mobile-tab" onclick="switchPage(&#39;sales&#39;,this)">매출</button>
+    <button class="mobile-tab active" onclick="switchPage('dash',this)">대시보드</button>
+    <button class="mobile-tab" onclick="switchPage('inventory',this);filterBrand('전체')">재고</button>
+    <button class="mobile-tab" onclick="switchPage('orders',this)">발주</button>
+    <button class="mobile-tab" onclick="switchPage('contacts',this)">컨택</button>
+    <button class="mobile-tab" onclick="switchPage('notes',this)">메모</button>
+    <button class="mobile-tab" onclick="switchPage('sourcing',this)">소싱원가</button>
+    <button class="mobile-tab" onclick="switchPage('sales',this)">매출</button>
   </div>
 </div>
 
@@ -415,82 +416,45 @@ body.viewer-mode .viewer-only{display:inline-flex}
     <span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em">실시간 환율</span>
     <button class="rate-refresh" onclick="fetchRates()">↻ 새로고침</button>
   </div>
-  <div class="rate-grid" id="rateGrid"><div class="rate-item"><span class="rate-cur">EUR</span><span class="rate-val">1,739원</span></div><div class="rate-item"><span class="rate-cur">GBP</span><span class="rate-val">1,996원</span></div><div class="rate-item"><span class="rate-cur">CHF</span><span class="rate-val">1,887원</span></div><div class="rate-item"><span class="rate-cur">USD</span><span class="rate-val">1,508원</span></div><div class="rate-item"><span class="rate-cur">JPY</span><span class="rate-val">9원</span></div><div class="rate-item"><span class="rate-cur">CNY</span><span class="rate-val">219원</span></div><div class="rate-item"><span class="rate-cur">SEK</span><span class="rate-val">160원</span></div><div class="rate-item"><span class="rate-cur">DKK</span><span class="rate-val">233원</span></div></div>
+  <div class="rate-grid" id="rateGrid"><div style="grid-column:1/-1;font-size:12px;color:var(--text3)">불러오는 중...</div></div>
   <div class="rate-footer" style="margin-top:8px">
-    <span style="font-size:10px;color:var(--text3)" id="rateSource">ER-API·Tue, 07 Apr 2026</span>
+    <span style="font-size:10px;color:var(--text3)" id="rateSource"></span>
   </div>
 </div>
 
 <!-- brandNavList (숨김 — 브랜드 탭은 메인에서 렌더링) -->
-<div id="brandNavList" style="display:none"><button class="brand-nav-item" onclick="switchPage(&#39;inventory&#39;,document.getElementById(&#39;navInventory&#39;));filterBrand(&#39;홈리빙&#39;)">
-      <span>🇯🇵 홈리빙</span>
-      <span class="brand-count">1</span>
-    </button><button class="brand-nav-item" onclick="switchPage(&#39;inventory&#39;,document.getElementById(&#39;navInventory&#39;));filterBrand(&#39;Hair Acc&#39;)">
-      <span>🇩🇪 Hair Acc</span>
-      <span class="brand-count">1</span>
-    </button><button class="brand-nav-item" onclick="switchPage(&#39;inventory&#39;,document.getElementById(&#39;navInventory&#39;));filterBrand(&#39;생활용품&#39;)">
-      <span>🇮🇹 생활용품</span>
-      <span class="brand-count">2</span>
-    </button></div>
-<div id="bc-전체" style="display:none">4</div>
+<div id="brandNavList" style="display:none"></div>
+<div id="bc-전체" style="display:none"></div>
 
 <!-- MAIN -->
 <main class="main">
 
   <!-- 대시보드 -->
-  <div id="page-dash" class="page">
+  <div id="page-dash" class="page active">
     <div class="page-header">
-      <div><div class="page-title">대시보드</div><div class="page-desc" id="dashDate">2026년 4월 현황</div></div>
+      <div><div class="page-title">대시보드</div><div class="page-desc" id="dashDate"></div></div>
     </div>
     <div id="dashAlert"></div>
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-l">총 제품 수</div><div class="kpi-v" id="kProducts">4</div><div class="kpi-s">등록된 SKU</div></div>
-      <div class="kpi"><div class="kpi-l">총 옵션 수</div><div class="kpi-v" id="kVariants">19</div><div class="kpi-s">색상 / 사이즈 등</div></div>
+      <div class="kpi"><div class="kpi-l">총 제품 수</div><div class="kpi-v" id="kProducts">0</div><div class="kpi-s">등록된 SKU</div></div>
+      <div class="kpi"><div class="kpi-l">총 옵션 수</div><div class="kpi-v" id="kVariants">0</div><div class="kpi-s">색상 / 사이즈 등</div></div>
       <div class="kpi"><div class="kpi-l">재고 부족</div><div class="kpi-v" id="kLow">0</div><div class="kpi-s">안전재고 미달</div></div>
       <div class="kpi"><div class="kpi-l">이번 달 매출</div><div class="kpi-v" id="kSales">₩0</div><div class="kpi-s" id="kSalesSub">출고 0건</div></div>
-      <div class="kpi"><div class="kpi-l">이번 달 수익</div><div class="kpi-v" id="kProfit">₩0</div><div class="kpi-s" id="kProfitSub">마진율 0%</div></div>
+      <div class="kpi"><div class="kpi-l">이번 달 수익</div><div class="kpi-v" id="kProfit">₩0</div><div class="kpi-s" id="kProfitSub">마진율 -</div></div>
     </div>
 
     <!-- 발주 현황 -->
     <div class="card" style="margin-bottom:1rem">
       <div class="card-title" style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center">
-        <span>발주 현황 <span id="dashOrderDate" style="font-weight:400;color:var(--text3);font-size:11px;margin-left:6px">2026.04.07 기준</span></span>
-        <span id="dashOrderTotal" style="font-size:13px;font-weight:700;color:var(--accent-dark)">
-      <span style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <span style="font-size:12px;font-weight:500;color:var(--atxt);background:var(--abg);padding:3px 12px;border-radius:99px">발주예정 ₩0 (0건)</span>
-        <span style="font-size:12px;font-weight:500;color:var(--gtxt);background:var(--gbg);padding:3px 12px;border-radius:99px">발주완료 ₩14,639,510 (4건)</span>
-      </span></span>
+        <span>발주 현황 <span id="dashOrderDate" style="font-weight:400;color:var(--text3);font-size:11px;margin-left:6px"></span></span>
+        <span id="dashOrderTotal" style="font-size:13px;font-weight:700;color:var(--accent-dark)"></span>
       </div>
-      <div id="dashOrders"><div class="empty">발주 내역이 없습니다</div></div>
+      <div id="dashOrders"></div>
     </div>
 
     <div class="row2">
-      <div class="card"><div class="card-title">재고 현황</div><div id="dashStock"><div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
-          <span style="font-weight:600">소레카라시계</span>
-          <span style="color:var(--text3)">72개 · 2옵션</span>
-        </div>
-        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
-      </div><div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
-          <span style="font-weight:600">CLINQ</span>
-          <span style="color:var(--text3)">80개 · 8옵션</span>
-        </div>
-        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
-      </div><div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
-          <span style="font-weight:600">Lorenzi Toothpaste squeezer</span>
-          <span style="color:var(--text3)">20개 · 2옵션</span>
-        </div>
-        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
-      </div><div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
-          <span style="font-weight:600">IMPREGNA ASTIC BRILLE</span>
-          <span style="color:var(--text3)">210개 · 7옵션</span>
-        </div>
-        <div class="stock-bar"><div class="stock-fill" style="width:100%;background:#38bdf8"></div></div>
-      </div></div></div>
-      <div class="card"><div class="card-title">최근 입출고</div><div id="dashLogs"><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">IMPREGNA ASTIC BRILLE</span><span style="color:var(--text3)">2개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">Lorenzi Toothpaste squeezer · Clear</span><span style="color:var(--text3)">10개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">Lorenzi Toothpaste squeezer · Clear</span><span style="color:var(--text3)">10개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">CLINQ · SUKI – Silver</span><span style="color:var(--text3)">10개</span><span style="color:var(--text3);font-size:12px">04-06</span></div><div class="log-item"><span class="log-badge li-in">입고</span><span style="flex:1;font-weight:600">소레카라시계</span><span style="color:var(--text3)">36개</span><span style="color:var(--text3);font-size:12px">04-03</span></div></div></div>
+      <div class="card"><div class="card-title">재고 현황</div><div id="dashStock"></div></div>
+      <div class="card"><div class="card-title">최근 입출고</div><div id="dashLogs"></div></div>
     </div>
     <div class="card">
       <div class="card-title">월별 매출 · 수익</div>
@@ -498,80 +462,57 @@ body.viewer-mode .viewer-only{display:inline-flex}
         <span class="legend-item"><span class="legend-dot" style="background:#38bdf8"></span>매출</span>
         <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>수익</span>
       </div>
-      <div style="position:relative;height:220px"><canvas id="dashChart" style="box-sizing: border-box; display: block; height: 220px; width: 1498px;" width="2248" height="330"></canvas></div>
+      <div style="position:relative;height:220px"><canvas id="dashChart"></canvas></div>
     </div>
   </div>
 
   <!-- 재고 관리 -->
-  <div id="page-inventory" class="page active">
+  <div id="page-inventory" class="page">
     <div class="page-header">
       <div>
         <div class="page-title" id="invPageTitle">재고 관리</div>
         <div class="page-desc" id="invPageDesc">전체 제품</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <label class="btn edit-only" style="cursor:pointer" title="엑셀 파일로 일괄 등록">
+          📥 엑셀 업로드
+          <input type="file" accept=".xlsx,.xls,.csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
+        </label>
         <button class="btn edit-only" onclick="requestAdminUnlock(openProductModal)">+ 제품 등록</button>
         <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(openStockModal)">입 / 출고 처리</button>
       </div>
     </div>
     <!-- 브랜드 탭 -->
-    <div class="brand-tabs" id="brandTabs"><button class="brand-tab active" onclick="filterBrand(&#39;전체&#39;)">전체 (4)</button><button class="brand-tab" onclick="filterBrand(&#39;홈리빙&#39;)">🇯🇵 홈리빙 <span style="opacity:0.6">(1)</span></button><button class="brand-tab" onclick="filterBrand(&#39;Hair Acc&#39;)">🇩🇪 Hair Acc <span style="opacity:0.6">(1)</span></button><button class="brand-tab" onclick="filterBrand(&#39;생활용품&#39;)">🇮🇹 생활용품 <span style="opacity:0.6">(2)</span></button></div>
+    <div class="brand-tabs" id="brandTabs"></div>
     <div class="card tbl-wrap">
       <table id="invTable">
         <thead><tr>
           <th style="width:32%">제품명</th><th>소싱국가</th>
           <th>총재고</th><th>옵션수</th><th>원가(KRW)</th><th>판매가</th><th>마진율</th><th>관리</th>
         </tr></thead>
-        <tbody id="invBody"><tr class="product-row" onclick="toggleProduct(&#39;p1775229917762&#39;)">
-      <td><span class="expand-icon ">▶</span>소레카라시계 <span class="badge b-accent" style="font-size:10px">2옵션</span></td>
-      <td>🇯🇵 일본</td>
-      <td><strong>72</strong></td>
-      <td>2</td>
-      <td>₩46,440</td>
-      <td>₩80,000</td>
-      <td><span class="badge b-warn">42%</span></td>
-      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775229917762&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775229917762&#39;))">삭제</button>
-      </td>
-    </tr><tr class="product-row" onclick="toggleProduct(&#39;p1775438677562&#39;)">
-      <td><span class="expand-icon ">▶</span>CLINQ <span class="badge b-accent" style="font-size:10px">8옵션</span></td>
-      <td>🇩🇪 독일</td>
-      <td><strong>80</strong></td>
-      <td>8</td>
-      <td>₩20,833</td>
-      <td>₩1</td>
-      <td>-</td>
-      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775438677562&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775438677562&#39;))">삭제</button>
-      </td>
-    </tr><tr class="product-row" onclick="toggleProduct(&#39;p1775438936369&#39;)">
-      <td><span class="expand-icon ">▶</span>Lorenzi Toothpaste squeezer <span class="badge b-accent" style="font-size:10px">2옵션</span></td>
-      <td>🇮🇹 이탈리아</td>
-      <td><strong>20</strong></td>
-      <td>2</td>
-      <td>₩489,502</td>
-      <td>₩1,000,000</td>
-      <td><span class="badge b-ok">51%</span></td>
-      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775438936369&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775438936369&#39;))">삭제</button>
-      </td>
-    </tr><tr class="product-row" onclick="toggleProduct(&#39;p1775439408430&#39;)">
-      <td><span class="expand-icon ">▶</span>IMPREGNA ASTIC BRILLE <span class="badge b-accent" style="font-size:10px">7옵션</span></td>
-      <td>🇫🇷 프랑스</td>
-      <td><strong>420</strong></td>
-      <td>7</td>
-      <td>₩12,194</td>
-      <td>₩950</td>
-      <td>-</td>
-      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openEditProductModal(&#39;p1775439408430&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteProduct(&#39;p1775439408430&#39;))">삭제</button>
-      </td>
-    </tr></tbody>
+        <tbody id="invBody"><tr><td colspan="9"><div class="empty">데이터 불러오는 중...</div></td></tr></tbody>
       </table>
+    </div>
+
+    <!-- 엑셀 업로드 가이드 -->
+    <div class="card edit-only" style="margin-top:0.5rem;border:1px dashed var(--border2)">
+      <div class="card-title" style="margin-bottom:0.75rem">📥 엑셀 일괄 업로드</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px;line-height:2">
+        엑셀(.xlsx) 또는 CSV 파일을 업로드하면 제품/옵션이 자동 등록됩니다<br>
+        <strong style="color:var(--text2)">필수 컬럼:</strong>
+        <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">브랜드, 제품명, 옵션명, 수량, 원가, 통화, 판매가, 소싱국가</span><br>
+        <strong style="color:var(--text2)">예시:</strong>
+        <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">Clinq, TIA, Silver, 10, 42.5, EUR, 89000, 독일</span><br>
+        <span style="color:var(--accent-dark)">같은 브랜드+제품명은 자동으로 하나의 제품에 옵션으로 묶입니다</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label class="btn btn-primary" style="cursor:pointer">
+          파일 선택 및 업로드
+          <input type="file" accept=".xlsx,.xls,.csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
+        </label>
+        <button class="btn" onclick="downloadExcelTemplate()">📄 템플릿 다운로드</button>
+        <span id="excelUploadStatus" style="font-size:12px;color:var(--text3)"></span>
+      </div>
     </div>
 
     <!-- 빠른 입력창 -->
@@ -584,7 +525,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         <br>옵션 없으면: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">아로마 캔들, 50, 8.5, 35000, 프랑스</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="quickInput" placeholder="제품명, 옵션명(선택), 수량, 원가EUR, 판매가KRW, 국가" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key===&#39;Enter&#39;)submitQuickInput()">
+        <input type="text" id="quickInput" placeholder="제품명, 옵션명(선택), 수량, 원가EUR, 판매가KRW, 국가" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickInput()">
         <button class="btn btn-primary" onclick="submitQuickInput()" style="white-space:nowrap;padding:11px 18px">등록 ↵</button>
       </div>
       <div id="quickResult" style="margin-top:8px;font-size:12px;color:var(--text3)"></div>
@@ -595,7 +536,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-sourcing" class="page">
     <div class="page-header">
       <div><div class="page-title">소싱 원가 계산</div><div class="page-desc">현지가 → 환율 → 관세 → 국내 단가 자동 계산</div></div>
-      <div id="sourcingEurBadge"><span class="badge b-accent">EUR 1,739원</span></div>
+      <div id="sourcingEurBadge"></div>
     </div>
     <div class="row2">
       <div class="card">
@@ -636,7 +577,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         </div>
         <div class="calc-box">
           <div class="calc-row"><span class="calc-lbl">현지 매입 합계 (KRW)</span><span id="rLocal">-</span></div>
-          <div class="calc-row"><span class="calc-lbl">관세</span><span id="rTariff">해당없음</span></div>
+          <div class="calc-row"><span class="calc-lbl">관세</span><span id="rTariff">-</span></div>
           <div class="calc-row"><span class="calc-lbl">부가세</span><span id="rVat">-</span></div>
           <div class="calc-row"><span class="calc-lbl">배송 + 기타</span><span id="rShip">-</span></div>
           <div class="calc-row"><span>단위 원가 (1개)</span><span id="rUnit">-</span></div>
@@ -660,113 +601,11 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-orders" class="page">
     <div class="page-header">
       <div><div class="page-title">발주 관리</div><div class="page-desc">해외 발주 및 입고 예정</div></div>
-      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal())">+ 발주 등록</button>
+      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>openOrderModal())">+ 발주 등록</button>
     </div>
     <div class="card tbl-wrap"><table>
       <thead><tr><th>발주일</th><th>공급사</th><th>국가</th><th>주문금액</th><th>통화</th><th>원화환산</th><th>배송방식</th><th>예상입고</th><th>진행상태</th><th>메모</th><th></th></tr></thead>
-      <tbody id="orderBody"><tr>
-      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
-      <td style="font-weight:700">Lorenzi</td>
-      <td>🇮🇹 이탈리아</td>
-      <td style="font-weight:600;white-space:nowrap">€3,135</td>
-      <td><span class="badge b-info" style="font-size:10px">EUR</span></td>
-      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩5,461,170</td>
-      <td style="font-size:12px">DHL</td>
-      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-24</td>
-      <td>
-        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447564354&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
-          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment">결제 대기</option><option value="shipping" selected="">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
-        </select>
-        <span class="badge b-accent" style="font-size:11px">
-          배송중
-        </span>
-      </td>
-      <td style="font-size:12px;color:var(--text3)">빠른입력</td>
-      <td style="display:flex;gap:4px;white-space:nowrap">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447564354&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447564354&#39;))">삭제</button>
-      </td>
-    </tr><tr>
-      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
-      <td style="font-weight:700">CLINQ</td>
-      <td>🇩🇪 독일</td>
-      <td style="font-weight:600;white-space:nowrap">€3,310</td>
-      <td><span class="badge b-info" style="font-size:10px">EUR</span></td>
-      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩5,766,020</td>
-      <td style="font-size:12px">DHL</td>
-      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-23</td>
-      <td>
-        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447605139&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
-          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment">결제 대기</option><option value="shipping" selected="">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
-        </select>
-        <span class="badge b-accent" style="font-size:11px">
-          배송중
-        </span>
-      </td>
-      <td style="font-size:12px;color:var(--text3)">배송2번나눠예정</td>
-      <td style="display:flex;gap:4px;white-space:nowrap">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447605139&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447605139&#39;))">삭제</button>
-      </td>
-    </tr><tr>
-      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
-      <td style="font-weight:700">IMPREGNA Astic Brille</td>
-      <td>🇫🇷 프랑스</td>
-      <td style="font-weight:600;white-space:nowrap">€656.9</td>
-      <td><span class="badge b-info" style="font-size:10px">EUR</span></td>
-      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩1,144,320</td>
-      <td style="font-size:12px">EXW (직접 픽업)</td>
-      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-28</td>
-      <td>
-        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447618806&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
-          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment">결제 대기</option><option value="shipping" selected="">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
-        </select>
-        <span class="badge b-accent" style="font-size:11px">
-          배송중
-        </span>
-      </td>
-      <td style="font-size:12px;color:var(--text3)">빠른입력</td>
-      <td style="display:flex;gap:4px;white-space:nowrap">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447618806&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447618806&#39;))">삭제</button>
-      </td>
-    </tr><tr>
-      <td style="color:var(--text3);font-size:12px;white-space:nowrap">2026-04-06</td>
-      <td style="font-weight:700">Sorekara</td>
-      <td>🇯🇵 일본</td>
-      <td style="font-weight:600;white-space:nowrap">¥252,000</td>
-      <td><span class="badge b-info" style="font-size:10px">JPY</span></td>
-      <td style="color:var(--accent-dark);font-weight:700;white-space:nowrap">₩2,268,000</td>
-      <td style="font-size:12px">EMS</td>
-      <td style="font-size:12px;color:var(--text3);white-space:nowrap">2026-04-27</td>
-      <td>
-        <select class="edit-only" onchange="requestAdminUnlock(()=&gt;updateOrderStatus(&#39;o1775447774405&#39;,this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
-          <option value="pending">대기중</option><option value="preparing">주문 준비완료</option><option value="payment" selected="">결제 대기</option><option value="shipping">배송중</option><option value="arrived">입고 완료</option><option value="cancelled">취소</option>
-        </select>
-        <span class="badge b-warn" style="font-size:11px">
-          결제 대기
-        </span>
-      </td>
-      <td style="font-size:12px;color:var(--text3)">독점계약+최종인보이스 이번주</td>
-      <td style="display:flex;gap:4px;white-space:nowrap">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=&gt;openOrderModal(&#39;o1775447774405&#39;))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=&gt;deleteOrder(&#39;o1775447774405&#39;))">삭제</button>
-      </td>
-    </tr><tr style="background:var(--bg2)">
-    <td colspan="5" style="text-align:right;color:var(--text3);font-size:12px;padding:10px 12px">발주 예정 <span style="font-size:10px;opacity:0.7">(대기중)</span></td>
-    <td style="padding:10px 12px;font-weight:600;color:var(--atxt)">₩0</td>
-    <td colspan="5"></td>
-  </tr>
-  <tr style="background:var(--bg2)">
-    <td colspan="5" style="text-align:right;color:var(--text3);font-size:12px;padding:6px 12px">발주 완료 <span style="font-size:10px;opacity:0.7">(준비완료·결제·배송·입고)</span></td>
-    <td style="padding:6px 12px;font-weight:600;color:var(--gtxt)">₩14,639,510</td>
-    <td colspan="5"></td>
-  </tr>
-  <tr style="background:var(--bg3);border-top:1px solid var(--border2)">
-    <td colspan="5" style="text-align:right;color:var(--text2);font-size:12px;font-weight:700;padding:10px 12px">총 합계 (취소 제외)</td>
-    <td style="padding:10px 12px;font-weight:700;font-size:15px;color:var(--accent-dark)">₩14,639,510</td>
-    <td colspan="5"></td>
-  </tr></tbody>
+      <tbody id="orderBody"><tr><td colspan="11"><div class="empty">불러오는 중...</div></td></tr></tbody>
     </table></div>
 
     <!-- 발주 빠른 입력 -->
@@ -779,7 +618,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         상태: 대기중 / 주문준비완료 / 결제대기 / 배송중 / 입고완료
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="quickOrderInput" placeholder="공급사, 국가, 금액, 통화, 배송방식, 상태, 수량" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key===&#39;Enter&#39;)submitQuickOrder()">
+        <input type="text" id="quickOrderInput" placeholder="공급사, 국가, 금액, 통화, 배송방식, 상태, 수량" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickOrder()">
         <button class="btn btn-primary" onclick="submitQuickOrder()" style="padding:11px 18px;white-space:nowrap">등록 ↵</button>
       </div>
       <div id="quickOrderResult" style="margin-top:8px;font-size:12px;color:var(--text3)"></div>
@@ -790,7 +629,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-contacts" class="page">
     <div class="page-header">
       <div><div class="page-title">컨택 관리</div><div class="page-desc">소싱 브랜드 컨택 현황 및 특이사항</div></div>
-      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=&gt;openContactModal())">+ 컨택 등록</button>
+      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>openContactModal())">+ 컨택 등록</button>
     </div>
 
     <!-- 빠른 입력 -->
@@ -801,7 +640,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         예: <span style="background:var(--bg2);padding:2px 8px;border-radius:6px;font-family:monospace">Clinq, 독일, 헤어ACC, TIA/NELE/LYA, MOQ 10개 Silver만, 진행중</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="quickContactInput" placeholder="브랜드, 국가, 주요품목, 소싱품목, 특이사항, 상태" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key===&#39;Enter&#39;)submitQuickContact()">
+        <input type="text" id="quickContactInput" placeholder="브랜드, 국가, 주요품목, 소싱품목, 특이사항, 상태" style="flex:1;padding:11px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit" onkeydown="if(event.key==='Enter')submitQuickContact()">
         <button class="btn btn-primary" onclick="submitQuickContact()" style="padding:11px 18px;white-space:nowrap">등록 ↵</button>
       </div>
       <div id="quickContactResult" style="margin-top:8px;font-size:12px"></div>
@@ -828,25 +667,18 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="notes-sidebar">
         <div class="notes-sidebar-header">
           <span class="notes-sidebar-title">메모 목록</span>
-          <span id="notesCount" style="font-size:11px;color:var(--text3)">1개</span>
+          <span id="notesCount" style="font-size:11px;color:var(--text3)">0개</span>
         </div>
         <!-- 태그 필터 -->
         <div style="padding:8px 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap">
-          <button class="note-tag-btn selected" id="filterAll" onclick="filterNotes(&#39;전체&#39;)">전체</button>
-          <button class="note-tag-btn" id="filter소싱" onclick="filterNotes(&#39;소싱&#39;)">소싱</button>
-          <button class="note-tag-btn" id="filter발주" onclick="filterNotes(&#39;발주&#39;)">발주</button>
-          <button class="note-tag-btn" id="filter미팅" onclick="filterNotes(&#39;미팅&#39;)">미팅</button>
-          <button class="note-tag-btn" id="filter아이디어" onclick="filterNotes(&#39;아이디어&#39;)">아이디어</button>
-          <button class="note-tag-btn" id="filter기타" onclick="filterNotes(&#39;기타&#39;)">기타</button>
+          <button class="note-tag-btn selected" id="filterAll" onclick="filterNotes('전체')">전체</button>
+          <button class="note-tag-btn" id="filter소싱" onclick="filterNotes('소싱')">소싱</button>
+          <button class="note-tag-btn" id="filter발주" onclick="filterNotes('발주')">발주</button>
+          <button class="note-tag-btn" id="filter미팅" onclick="filterNotes('미팅')">미팅</button>
+          <button class="note-tag-btn" id="filter아이디어" onclick="filterNotes('아이디어')">아이디어</button>
+          <button class="note-tag-btn" id="filter기타" onclick="filterNotes('기타')">기타</button>
         </div>
-        <div class="notes-list" id="notesList"><div class="note-item" onclick="openNote(&#39;note1775531759038&#39;)">
-      <div class="note-item-date">
-        <span>2026-04-07</span>
-        <span class="note-tag note-tag-발주">발주</span>
-      </div>
-      <div class="note-item-title">2026-04-07</div>
-      <div class="note-item-preview">sorekara 독점계약서 전자문서 요청. 이번주내로 final invo</div>
-    </div></div>
+        <div class="notes-list" id="notesList"></div>
       </div>
       <!-- 오른쪽: 에디터 -->
       <div class="notes-editor" id="notesEditor">
@@ -863,25 +695,150 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <!-- 매출 / 수익 -->
   <div id="page-sales" class="page">
     <div class="page-header">
-      <div><div class="page-title">매출 / 수익</div><div class="page-desc">월별 판매 실적</div></div>
-      <select id="salesMonth" onchange="renderSales()" style="padding:7px 11px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit"></select>
+      <div><div class="page-title">매출 / 수익</div><div class="page-desc">판매 실적 관리</div></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>{if(!products.length)return alert('먼저 제품을 등록해주세요');document.getElementById('seProduct').innerHTML=products.map(p=>`<option value='${p.id}'>${p.name}</option>`).join('');updateSaleVariants();document.getElementById('seQty').value='1';document.getElementById('seDate').value=today();document.getElementById('seMemo').value='';document.getElementById('sePrice').value='';document.getElementById('seChannel').value='스마트스토어';openModal('saleEntryModal');})">+ 판매 입력</button>
+        <select id="salesMonth" onchange="renderSales()" style="padding:7px 11px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit"></select>
+      </div>
     </div>
+
+    <!-- 뷰 탭 -->
+    <div style="display:flex;gap:4px;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0">
+      <button class="sales-view-tab active" onclick="switchSalesView('monthly',this)" style="padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:inherit;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:400">월별</button>
+      <button class="sales-view-tab" onclick="switchSalesView('daily',this)" style="padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:inherit;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:400">일별</button>
+      <button class="sales-view-tab" onclick="switchSalesView('weekly',this)" style="padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:inherit;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:400">주별</button>
+      <button class="sales-view-tab" onclick="switchSalesView('product',this)" style="padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:inherit;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:400">품목별</button>
+      <button class="sales-view-tab" onclick="switchSalesView('popular',this)" style="padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:inherit;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:400">인기상품</button>
+    </div>
+
+    <!-- KPI -->
     <div class="kpi-grid" id="salesKpi"></div>
-    <div class="card"><div class="card-title">제품별 판매</div>
+
+    <!-- 월별 뷰 -->
+    <div id="salesView-monthly">
+      <div class="card"><div class="card-title">제품별 판매</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>제품명</th><th>옵션</th><th>채널</th><th>판매수량</th><th>매출</th><th>원가</th><th>수익</th><th>마진율</th></tr></thead>
+          <tbody id="salesBody"><tr><td colspan="8"><div class="empty">출고 내역을 입력하면 표시됩니다</div></td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card"><div class="card-title">손익 요약</div><div id="profitSummary"></div></div>
+    </div>
+
+    <!-- 일별 뷰 -->
+    <div id="salesView-daily" style="display:none">
+      <div class="card">
+        <div class="card-title">일별 판매 현황</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>날짜</th><th>판매수량</th><th>매출</th><th>수익</th><th>채널</th></tr></thead>
+          <tbody id="dailySalesBody"><tr><td colspan="5"><div class="empty">데이터가 없습니다</div></td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- 주별 뷰 -->
+    <div id="salesView-weekly" style="display:none">
+      <div class="card">
+        <div class="card-title">주별 판매 현황</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>주차</th><th>기간</th><th>판매수량</th><th>매출</th><th>수익</th></tr></thead>
+          <tbody id="weeklySalesBody"><tr><td colspan="5"><div class="empty">데이터가 없습니다</div></td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- 품목별 뷰 -->
+    <div id="salesView-product" style="display:none">
+      <div class="card">
+        <div class="card-title">품목별 전체 판매</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>순위</th><th>제품명</th><th>옵션</th><th>총 판매수량</th><th>총 매출</th><th>총 수익</th><th>마진율</th></tr></thead>
+          <tbody id="productSalesBody"><tr><td colspan="7"><div class="empty">데이터가 없습니다</div></td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- 인기상품 뷰 -->
+    <div id="salesView-popular" style="display:none">
+      <div class="row2">
+        <div class="card">
+          <div class="card-title">🏆 판매수량 TOP 5</div>
+          <div id="popularByQty"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">💰 매출 TOP 5</div>
+          <div id="popularByRevenue"></div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="card">
+          <div class="card-title">📈 수익 TOP 5</div>
+          <div id="popularByProfit"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 마진율 TOP 5</div>
+          <div id="popularByMargin"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 입출고 내역 관리 -->
+    <div class="card" style="margin-top:0.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div class="card-title" style="margin-bottom:0">입출고 내역 <span style="font-weight:400;color:var(--text3);text-transform:none;font-size:11px">— 잘못된 내역 삭제 가능</span></div>
+        <select id="logFilter" onchange="renderStockLogs()" style="font-size:12px;padding:4px 8px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-family:inherit">
+          <option value="all">전체</option>
+          <option value="out">출고만</option>
+          <option value="in">입고만</option>
+        </select>
+      </div>
       <div class="tbl-wrap"><table>
-        <thead><tr><th>제품명</th><th>옵션</th><th>판매수량</th><th>매출</th><th>원가</th><th>수익</th><th>마진율</th></tr></thead>
-        <tbody id="salesBody"><tr><td colspan="7"><div class="empty">출고 내역을 입력하면 표시됩니다</div></td></tr></tbody>
+        <thead><tr><th>날짜</th><th>제품명</th><th>옵션</th><th>채널</th><th>구분</th><th>수량</th><th>메모</th><th class="edit-only">삭제</th></tr></thead>
+        <tbody id="stockLogBody"><tr><td colspan="8"><div class="empty">내역이 없습니다</div></td></tr></tbody>
       </table></div>
     </div>
-    <div class="card"><div class="card-title">손익 요약</div><div id="profitSummary"></div></div>
   </div>
 </main>
+
+<!-- 판매 입력 모달 -->
+<div class="modal-overlay" id="saleEntryModal">
+  <div class="modal">
+    <div class="modal-title">판매 입력</div>
+    <button class="modal-close" onclick="closeModal('saleEntryModal')">✕</button>
+    <div class="form-row">
+      <div class="fg"><label>제품 선택 *</label><select id="seProduct" onchange="updateSaleVariants()" style="width:100%"></select></div>
+      <div class="fg"><label>옵션</label><select id="seVariant" style="width:100%"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>판매 수량 *</label><input type="number" id="seQty" value="1" min="1"></div>
+      <div class="fg"><label>판매 채널</label>
+        <select id="seChannel">
+          <option value="자사몰">자사몰</option>
+          <option value="스마트스토어">스마트스토어</option>
+          <option value="쿠팡">쿠팡</option>
+          <option value="오픈마켓">오픈마켓</option>
+          <option value="도매">도매</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>판매일</label><input type="date" id="seDate"></div>
+      <div class="fg"><label>판매가 (개당, KRW)</label><input type="number" id="sePrice" placeholder="0 = 등록가 사용"></div>
+    </div>
+    <div class="fg" style="margin-bottom:14px"><label>메모</label><input type="text" id="seMemo" placeholder="선택사항"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('saleEntryModal')">취소</button>
+      <button class="btn btn-primary" onclick="saveSaleEntry()">판매 기록</button>
+    </div>
+  </div>
+</div>
 
 <!-- 컨택 모달 -->
 <div class="modal-overlay" id="contactModal">
   <div class="modal">
     <div class="modal-title" id="contactModalTitle">컨택 등록</div>
-    <button class="modal-close" onclick="closeModal(&#39;contactModal&#39;)">✕</button>
+    <button class="modal-close" onclick="closeModal('contactModal')">✕</button>
     <div class="form-row">
       <div class="fg"><label>브랜드명 *</label><input type="text" id="ctBrand" placeholder="예: Clinq"></div>
       <div class="fg"><label>국가</label>
@@ -910,7 +867,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       </select>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal(&#39;contactModal&#39;)">취소</button>
+      <button class="btn" onclick="closeModal('contactModal')">취소</button>
       <button class="btn btn-primary" onclick="saveContact()">저장하기</button>
     </div>
   </div>
@@ -920,12 +877,12 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <div class="modal-overlay" id="adminAuthModal">
   <div class="modal" style="max-width:380px">
     <div class="modal-title">🔐 관리자 인증</div>
-    <button class="modal-close" onclick="closeModal(&#39;adminAuthModal&#39;)">✕</button>
+    <button class="modal-close" onclick="closeModal('adminAuthModal')">✕</button>
     <div style="font-size:13px;color:var(--text2);margin-bottom:1rem">데이터를 수정하려면 관리자 비밀번호가 필요합니다</div>
     <div id="adminAuthError" class="login-error"></div>
     <div class="fg" style="margin-bottom:12px">
       <label>관리자 비밀번호</label>
-      <input type="password" id="adminAuthPw" placeholder="비밀번호 입력" onkeydown="if(event.key===&#39;Enter&#39;)submitAdminAuth()">
+      <input type="password" id="adminAuthPw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')submitAdminAuth()">
     </div>
     <button class="btn btn-primary" style="width:100%;padding:10px" onclick="submitAdminAuth()">확인</button>
     <div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center">초기 비밀번호: <strong>holidays1234</strong></div>
@@ -936,21 +893,21 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <div class="modal-overlay" id="pwModal">
   <div class="modal">
     <div class="modal-title">비밀번호 설정</div>
-    <button class="modal-close" onclick="closeModal(&#39;pwModal&#39;)">✕</button>
+    <button class="modal-close" onclick="closeModal('pwModal')">✕</button>
     <div class="sec-div">관리자 비밀번호 변경</div>
     <div class="fg" style="margin-bottom:10px"><label>현재 비밀번호</label><input type="password" id="pwCurMaster"></div>
     <div class="fg" style="margin-bottom:10px"><label>새 비밀번호 (6자 이상)</label><input type="password" id="pwNewMaster"></div>
     <div class="fg" style="margin-bottom:14px"><label>새 비밀번호 확인</label><input type="password" id="pwNewMaster2"></div>
     <button class="btn btn-primary" style="width:100%" onclick="changeMasterPw()">변경하기</button>
-    <div class="modal-foot"><button class="btn" onclick="closeModal(&#39;pwModal&#39;)">닫기</button></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('pwModal')">닫기</button></div>
   </div>
 </div>
 
 <!-- 제품 등록/수정 모달 -->
 <div class="modal-overlay" id="productModal">
   <div class="modal" style="max-width:620px">
-    <div class="modal-title" id="productModalTitle">제품 수정</div>
-    <button class="modal-close" onclick="closeModal(&#39;productModal&#39;)">✕</button>
+    <div class="modal-title" id="productModalTitle">제품 등록</div>
+    <button class="modal-close" onclick="closeModal('productModal')">✕</button>
     <div class="sec-div">기본 정보</div>
     <div class="form-row">
       <div class="fg"><label>제품명 *</label><input type="text" id="pmName" placeholder="예: Clinq TIA"></div>
@@ -985,60 +942,12 @@ body.viewer-mode .viewer-only{display:inline-flex}
           <span style="width:24px"></span>
         </span>
       </div>
-      <div id="variantList"><div class="variant-item" data-vid="v1775438677562">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="SUKI – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div><div class="variant-item" data-vid="v1775438720250">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="TIA – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="10" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div><div class="variant-item" data-vid="v1775438739307bmwd">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="NELE – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div><div class="variant-item" data-vid="v1775438743561vmhq">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="LYA – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div><div class="variant-item" data-vid="v177543874908580e3">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="MIRA – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div><div class="variant-item" data-vid="v1775438754023co1d">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="AREA – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div><div class="variant-item" data-vid="v17754387581095k5a">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="SANA – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div><div class="variant-item" data-vid="v17754387670475j50">
-    <input type="text" placeholder="옵션명 (예: Silver)" value="TALA – Silver">
-    <input type="number" placeholder="재고" value="10" style="text-align:center">
-    <input type="number" placeholder="원가" value="" style="text-align:right">
-    <input type="number" placeholder="판매가" value="" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  </div></div>
+      <div id="variantList"></div>
       <button class="add-variant-editor-btn" onclick="addVariantRow()">+ 옵션 추가</button>
     </div>
 
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal(&#39;productModal&#39;)">취소</button>
+      <button class="btn" onclick="closeModal('productModal')">취소</button>
       <button class="btn btn-primary" onclick="saveProduct()">저장하기</button>
     </div>
   </div>
@@ -1048,7 +957,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <div class="modal-overlay" id="stockModal">
   <div class="modal">
     <div class="modal-title">입 / 출고 처리</div>
-    <button class="modal-close" onclick="closeModal(&#39;stockModal&#39;)">✕</button>
+    <button class="modal-close" onclick="closeModal('stockModal')">✕</button>
     <div class="form-row">
       <div class="fg"><label>제품 선택 *</label><select id="stProduct" style="width:100%" onchange="updateStockVariants()"></select></div>
       <div class="fg"><label>옵션 선택</label><select id="stVariant" style="width:100%"></select></div>
@@ -1064,7 +973,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="fg"><label>메모</label><input type="text" id="stMemo" placeholder="선택사항"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal(&#39;stockModal&#39;)">취소</button>
+      <button class="btn" onclick="closeModal('stockModal')">취소</button>
       <button class="btn btn-primary" onclick="saveStock()">처리하기</button>
     </div>
   </div>
@@ -1073,8 +982,8 @@ body.viewer-mode .viewer-only{display:inline-flex}
 <!-- 발주 모달 -->
 <div class="modal-overlay" id="orderModal">
   <div class="modal">
-    <div class="modal-title" id="orderModalTitle">발주 수정</div>
-    <button class="modal-close" onclick="closeModal(&#39;orderModal&#39;)">✕</button>
+    <div class="modal-title" id="orderModalTitle">발주 등록</div>
+    <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
     <div class="form-row">
       <div class="fg"><label>공급사 (브랜드) *</label><input type="text" id="orName" placeholder="예: CLINQ, Lorenzi"></div>
       <div class="fg"><label>공급 국가</label>
@@ -1131,7 +1040,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="fg"><label>메모</label><input type="text" id="orMemo" placeholder="추가 메모"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal(&#39;orderModal&#39;)">취소</button>
+      <button class="btn" onclick="closeModal('orderModal')">취소</button>
       <button class="btn btn-primary" onclick="saveOrder()">저장하기</button>
     </div>
   </div>
@@ -1167,17 +1076,72 @@ function setSyncState(s){
   dot.className='sync-dot'+(s==='saving'?' saving':s==='error'?' error':'');
   lbl.textContent=s==='ok'?'Firebase 연결됨':s==='saving'?'저장 중...':'저장 실패';
 }
-async function fbSave(col,id,data){ setSyncState('saving'); try{await setDoc(doc(db,col,id),data);setSyncState('ok');}catch(e){setSyncState('error');} }
-async function fbDelete(col,id){ setSyncState('saving'); try{await deleteDoc(doc(db,col,id));setSyncState('ok');}catch(e){setSyncState('error');} }
+
+// 낙관적 업데이트: 로컬 먼저 반영 → Firebase 백그라운드 저장
+function fbSave(col,id,data){
+  // 로컬 데이터 즉시 업데이트
+  if(col==='products'){
+    const idx=products.findIndex(x=>x.id===id);
+    if(idx>=0)products[idx]={...data};
+    else products.push({...data});
+    renderAll();
+  }else if(col==='stockLogs'){
+    const idx=stockLogs.findIndex(x=>x.id===id);
+    if(idx>=0)stockLogs[idx]={...data};
+    else stockLogs.push({...data});
+    stockLogs.sort((a,b)=>a.date.localeCompare(b.date));
+    renderDash();renderStockLogs();
+  }else if(col==='orders'){
+    const idx=orders.findIndex(x=>x.id===id);
+    if(idx>=0)orders[idx]={...data};
+    else orders.push({...data});
+    orders.sort((a,b)=>b.date.localeCompare(a.date));
+    renderOrders();renderDash();
+  }else if(col==='contacts'){
+    const idx=contacts.findIndex(x=>x.id===id);
+    if(idx>=0)contacts[idx]={...data};
+    else contacts.push({...data});
+    renderContacts();
+  }else if(col==='notes'){
+    const idx=notes.findIndex(x=>x.id===id);
+    if(idx>=0)notes[idx]={...data};
+    else notes.push({...data});
+    renderNotesList();
+  }
+  // Firebase 백그라운드 저장
+  setSyncState('saving');
+  return setDoc(doc(db,col,id),data)
+    .then(()=>setSyncState('ok'))
+    .catch(e=>{console.error(e);setSyncState('error');});
+}
+
+function fbDelete(col,id){
+  // 로컬 즉시 삭제
+  if(col==='products'){products=products.filter(x=>x.id!==id);renderAll();}
+  else if(col==='stockLogs'){stockLogs=stockLogs.filter(x=>x.id!==id);renderDash();renderStockLogs();}
+  else if(col==='orders'){orders=orders.filter(x=>x.id!==id);renderOrders();renderDash();}
+  else if(col==='contacts'){contacts=contacts.filter(x=>x.id!==id);renderContacts();}
+  else if(col==='notes'){notes=notes.filter(x=>x.id!==id);renderNotesList();}
+  setSyncState('saving');
+  return deleteDoc(doc(db,col,id))
+    .then(()=>setSyncState('ok'))
+    .catch(e=>{console.error(e);setSyncState('error');});
+}
 
 function startListeners(){
+  // Firebase 리스너는 다른 기기/탭에서 변경된 것만 동기화
   onSnapshot(collection(db,'products'),snap=>{
-    products=snap.docs.map(d=>({...d.data(),id:d.id}));
-    renderAll();
+    const incoming=snap.docs.map(d=>({...d.data(),id:d.id}));
+    // 현재 로컬과 다를 때만 업데이트 (자기 자신의 변경은 이미 반영됨)
+    if(JSON.stringify(incoming)!==JSON.stringify(products)){
+      products=incoming;renderAll();
+    }
   });
   onSnapshot(collection(db,'stockLogs'),snap=>{
-    stockLogs=snap.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>a.date.localeCompare(b.date));
-    renderAll();
+    const incoming=snap.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>a.date.localeCompare(b.date));
+    if(JSON.stringify(incoming)!==JSON.stringify(stockLogs)){
+      stockLogs=incoming;renderAll();renderStockLogs();
+    }
   });
   onSnapshot(collection(db,'orders'),snap=>{
     orders=snap.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>b.date.localeCompare(a.date));
@@ -1197,7 +1161,8 @@ function renderAll(){
   const ap=document.querySelector('.page.active')?.id;
   if(ap==='page-inventory')renderInventory();
   if(ap==='page-sourcing')renderSourcing();
-  if(ap==='page-sales')renderSales();
+  if(ap==='page-sales'){renderSales();renderStockLogs();renderSalesView();}
+  if(ap==='page-orders')renderOrders();
 }
 
 /* ── 브랜드 필터 ── */
@@ -1211,8 +1176,10 @@ const countryFlag={
 function getBrands(){
   const brands=new Map();
   products.forEach(p=>{
-    const b=p.brand||p.category||'기타';
-    if(!brands.has(b))brands.set(b,{name:b,country:p.country,products:[]});
+    // brand 필드 우선, 없으면 제품명을 브랜드로 사용 (카테고리로 묶지 않음)
+    const b=p.brand&&p.brand.trim()?p.brand.trim():'미분류';
+    if(!brands.has(b))brands.set(b,{name:b,countries:new Set(),products:[]});
+    brands.get(b).countries.add(p.country);
     brands.get(b).products.push(p);
   });
   return brands;
@@ -1227,11 +1194,12 @@ function renderBrandNav(){
   const list=document.getElementById('brandNavList');
   if(!list)return;
   list.innerHTML=[...brands.entries()].map(([name,info])=>{
-    const flag=countryFlag[info.country]||'🌐';
+    // 여러 국가면 첫번째, 아니면 하나
+    const flags=[...info.countries].map(c=>countryFlag[c]||'🌐').join('');
     const isActive=currentBrand===name;
     const safe=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     return`<button class="brand-nav-item${isActive?' active':''}" onclick="switchPage('inventory',document.getElementById('navInventory'));filterBrand('${safe}')">
-      <span>${flag} ${name}</span>
+      <span>${flags} ${name}</span>
       <span class="brand-count">${info.products.length}</span>
     </button>`;
   }).join('');
@@ -1240,22 +1208,20 @@ function renderBrandNav(){
   if(!tabs)return;
   const allTab=`<button class="brand-tab${currentBrand==='전체'?' active':''}" onclick="filterBrand('전체')">전체 (${total})</button>`;
   const brandTabs=[...brands.entries()].map(([name,info])=>{
-    const flag=countryFlag[info.country]||'🌐';
+    const flags=[...info.countries].map(c=>countryFlag[c]||'🌐').join('');
     const safe=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    return`<button class="brand-tab${currentBrand===name?' active':''}" onclick="filterBrand('${safe}')">${flag} ${name} <span style="opacity:0.6">(${info.products.length})</span></button>`;
+    return`<button class="brand-tab${currentBrand===name?' active':''}" onclick="filterBrand('${safe}')">${flags} ${name} <span style="opacity:0.6">(${info.products.length})</span></button>`;
   }).join('');
   tabs.innerHTML=allTab+brandTabs;
 }
 
 window.filterBrand=function(brand){
   currentBrand=brand;
-  // 사이드바 active 상태
   document.querySelectorAll('.brand-nav-item').forEach(b=>b.classList.remove('active'));
   if(brand==='전체'){
     const btn=document.getElementById('brand-btn-전체');
     if(btn)btn.classList.add('active');
   }
-  // 페이지 타이틀 업데이트
   const title=document.getElementById('invPageTitle');
   const desc=document.getElementById('invPageDesc');
   if(title)title.textContent=brand==='전체'?'재고 관리':brand;
@@ -1264,7 +1230,8 @@ window.filterBrand=function(brand){
     else{
       const brands=getBrands();
       const info=brands.get(brand);
-      desc.textContent=`${countryFlag[info?.country]||'🌐'} ${info?.country||''} · ${info?.products.length||0}개 제품`;
+      const flags=[...(info?.countries||[])].map(c=>countryFlag[c]||'🌐').join(' ');
+      desc.textContent=`${flags} · ${info?.products.length||0}개 제품`;
     }
   }
   renderBrandNav();
@@ -1348,7 +1315,7 @@ window.switchPage=function(id,btn){
   if(id==='orders')renderOrders();
   if(id==='contacts')renderContacts();
   if(id==='notes'){renderNotesList();}
-  if(id==='sales'){initSalesMonth();renderSales();}
+  if(id==='sales'){initSalesMonth();renderSales();renderStockLogs();renderSalesView();}
 };
 window.openModal=id=>document.getElementById(id).classList.add('open');
 window.closeModal=id=>document.getElementById(id).classList.remove('open');
@@ -1522,42 +1489,126 @@ function renderDash(){
 
 /* ── INVENTORY ── */
 const expandedRows=new Set();
+const expandedBrands=new Set(); // 브랜드 섹션 펼침 상태
 
 function renderInventory(){
   const tb=document.getElementById('invBody');if(!tb)return;
+
   const filtered=currentBrand==='전체'
     ?products
-    :products.filter(p=>(p.brand||p.category||'기타')===currentBrand);
+    :products.filter(p=>(p.brand&&p.brand.trim()?p.brand.trim():'미분류')===currentBrand);
+
   if(!filtered.length){
     tb.innerHTML=`<tr><td colspan="10"><div class="empty">${products.length?'해당 브랜드 제품이 없습니다':'제품을 등록해주세요'}</div></td></tr>`;
     return;
   }
-  let html='';
-  filtered.forEach(p=>{
-    const vs=getProductVariants(p);
-    const totalQty=vs.reduce((s,v)=>s+(v.qty||0),0);
-    const isExpanded=expandedRows.has(p.id);
-    const avgCost=vs.reduce((s,v)=>s+(v.costKrw||0),0)/vs.length;
-    const avgPrice=vs.reduce((s,v)=>s+(v.priceKrw||0),0)/vs.length;
-    const m=pct(avgPrice-avgCost,avgPrice);
-    const mc=m>=50?'b-ok':m>=30?'b-warn':'b-low';
-    const hasVariants=p.variants&&p.variants.length>0;
-    const flag=countryFlag[p.country]||'🌐';
-    const brandLabel=p.brand?`<span class="badge b-info" style="font-size:10px">${p.brand}</span> `:'';
 
-    html+=`<tr class="product-row" onclick="toggleProduct('${p.id}')">
-      <td><span class="expand-icon ${isExpanded?'open':''}">▶</span>${currentBrand==='전체'?brandLabel:''}${p.name}${hasVariants?` <span class="badge b-accent" style="font-size:10px">${vs.length}옵션</span>`:''}</td>
-      <td>${flag} ${p.country}</td>
-      <td><strong>${totalQty}</strong></td>
-      <td>${vs.length}</td>
-      <td>${avgCost>0?won(Math.round(avgCost)):'-'}</td>
-      <td>${avgPrice>0?won(Math.round(avgPrice)):'-'}</td>
-      <td>${m>0?`<span class="badge ${mc}">${m}%</span>`:'-'}</td>
-      <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openEditProductModal('${p.id}'))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=>deleteProduct('${p.id}'))">삭제</button>
-      </td>
-    </tr>`;
+  // 브랜드별 그룹핑 (전체 탭일 때)
+  if(currentBrand==='전체'){
+    const brandGroups=new Map();
+    filtered.forEach(p=>{
+      const b=p.brand&&p.brand.trim()?p.brand.trim():'미분류';
+      if(!brandGroups.has(b))brandGroups.set(b,{products:[],countries:new Set()});
+      brandGroups.get(b).products.push(p);
+      brandGroups.get(b).countries.add(p.country);
+    });
+
+    let html='';
+    brandGroups.forEach((group,brandName)=>{
+      const isOpen=expandedBrands.has(brandName)||expandedBrands.size===0;
+      if(expandedBrands.size===0)expandedBrands.add(brandName); // 첫 로드 시 모두 열기
+      const flags=[...group.countries].map(c=>countryFlag[c]||'🌐').join('');
+      const totalQtyAll=group.products.reduce((s,p)=>s+getProductVariants(p).reduce((ss,v)=>ss+(v.qty||0),0),0);
+      const isMissing=brandName==='미분류';
+
+      // 브랜드 헤더 행
+      html+=`<tr style="background:var(--bg2);cursor:pointer" onclick="toggleBrand('${brandName.replace(/'/g,"\\'")}')">
+        <td colspan="7" style="padding:10px 12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;color:var(--accent);transition:transform 0.2s;display:inline-block;transform:${isOpen?'rotate(90deg)':'rotate(0deg)'}" id="brand-arrow-${brandName.replace(/[^a-z0-9]/gi,'_')}">▶</span>
+            <span style="font-weight:700;font-size:14px">${flags} ${brandName}</span>
+            <span class="badge b-accent" style="font-size:11px">${group.products.length}개 제품</span>
+            <span style="color:var(--text3);font-size:12px">총 ${totalQtyAll}개 재고</span>
+            ${isMissing?`<span class="badge b-warn" style="font-size:10px">브랜드 미설정</span>`:''}
+          </div>
+        </td>
+        <td style="background:var(--bg2)"></td>
+      </tr>`;
+
+      if(isOpen){
+        group.products.forEach(p=>{ html+=renderProductRow(p); });
+      }
+    });
+    tb.innerHTML=html;
+  }else{
+    // 특정 브랜드 탭 선택 시 — 기존 방식
+    let html='';
+    filtered.forEach(p=>{ html+=renderProductRow(p); });
+    tb.innerHTML=html;
+  }
+}
+
+window.toggleBrand=function(brandName){
+  if(expandedBrands.has(brandName))expandedBrands.delete(brandName);
+  else expandedBrands.add(brandName);
+  renderInventory();
+};
+
+function renderProductRow(p){
+  const vs=getProductVariants(p);
+  const totalQty=vs.reduce((s,v)=>s+(v.qty||0),0);
+  const isExpanded=expandedRows.has(p.id);
+  const avgCost=vs.reduce((s,v)=>s+(v.costKrw||0),0)/vs.length;
+  const avgPrice=vs.reduce((s,v)=>s+(v.priceKrw||0),0)/vs.length;
+  const m=pct(avgPrice-avgCost,avgPrice);
+  const mc=m>=50?'b-ok':m>=30?'b-warn':'b-low';
+  const hasVariants=p.variants&&p.variants.length>0;
+  const flag=countryFlag[p.country]||'🌐';
+
+  let html=`<tr class="product-row" onclick="toggleProduct('${p.id}')" style="padding-left:8px">
+    <td style="padding-left:28px"><span class="expand-icon ${isExpanded?'open':''}">▶</span>${p.name}${hasVariants?` <span class="badge b-accent" style="font-size:10px">${vs.length}옵션</span>`:''}</td>
+    <td>${flag} ${p.country}</td>
+    <td><strong>${totalQty}</strong></td>
+    <td>${vs.length}</td>
+    <td>${avgCost>0?won(Math.round(avgCost)):'-'}</td>
+    <td>${avgPrice>0?won(Math.round(avgPrice)):'-'}</td>
+    <td>${m>0?`<span class="badge ${mc}">${m}%</span>`:'-'}</td>
+    <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
+      <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openEditProductModal('${p.id}'))">수정</button>
+      <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=>deleteProduct('${p.id}'))">삭제</button>
+    </td>
+  </tr>`;
+
+  if(isExpanded){
+    vs.forEach(v=>{
+      const st=variantSt(v,p.safeQty||5);
+      const vm=pct(v.priceKrw-v.costKrw,v.priceKrw);
+      const vmc=vm>=50?'b-ok':vm>=30?'b-warn':'b-low';
+      html+=`<tr class="variant-row">
+        <td style="padding-left:52px"><span class="variant-name"><span class="variant-dot"></span>${v.name}</span></td>
+        <td></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',-1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">−</button>
+            <span id="qty-${p.id}-${v.id}" style="font-weight:600;min-width:28px;text-align:center;cursor:pointer;padding:2px 4px;border-radius:4px" class="edit-only" onclick="requestAdminUnlock(()=>inlineQtyEdit('${p.id}','${v.id}',${v.qty}))" title="클릭하여 직접 수정">${v.qty}</span>
+            <span class="viewer-only" style="font-weight:600">${v.qty}</span>
+            <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">+</button>
+            <span class="badge ${st.cls}" style="font-size:10px">${st.label}</span>
+          </div>
+        </td>
+        <td></td>
+        <td>${v.costKrw?won(v.costKrw):'-'}</td>
+        <td>${v.priceKrw?won(v.priceKrw):'-'}</td>
+        <td>${vm>0?`<span class="badge ${vmc}">${vm}%</span>`:'-'}</td>
+        <td></td>
+      </tr>`;
+    });
+    html+=`<tr class="add-variant-row"><td colspan="8" style="padding-left:52px">
+      <button class="add-variant-btn edit-only" onclick="requestAdminUnlock(()=>openEditProductModal('${p.id}'))">+ 옵션 추가 / 수정</button>
+    </td></tr>`;
+  }
+  return html;
+}
 
     if(isExpanded){
       vs.forEach(v=>{
@@ -1565,9 +1616,17 @@ function renderInventory(){
         const vm=pct(v.priceKrw-v.costKrw,v.priceKrw);
         const vmc=vm>=50?'b-ok':vm>=30?'b-warn':'b-low';
         html+=`<tr class="variant-row">
-          <td style="padding-left:42px"><span class="variant-name"><span class="variant-dot"></span>${v.name}</span></td>
+          <td style="padding-left:52px"><span class="variant-name"><span class="variant-dot"></span>${v.name}</span></td>
           <td></td>
-          <td>${v.qty} <span class="badge ${st.cls}" style="font-size:10px">${st.label}</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',-1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">−</button>
+              <span id="qty-${p.id}-${v.id}" style="font-weight:600;min-width:28px;text-align:center;cursor:pointer;padding:2px 4px;border-radius:4px" class="edit-only" onclick="requestAdminUnlock(()=>inlineQtyEdit('${p.id}','${v.id}',${v.qty}))" title="클릭하여 직접 수정">${v.qty}</span>
+              <span class="viewer-only" style="font-weight:600">${v.qty}</span>
+              <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">+</button>
+              <span class="badge ${st.cls}" style="font-size:10px">${st.label}</span>
+            </div>
+          </td>
           <td></td>
           <td>${v.costKrw?won(v.costKrw):'-'}</td>
           <td>${v.priceKrw?won(v.priceKrw):'-'}</td>
@@ -1575,7 +1634,7 @@ function renderInventory(){
           <td></td>
         </tr>`;
       });
-      html+=`<tr class="add-variant-row"><td colspan="8" style="padding-left:42px">
+      html+=`<tr class="add-variant-row"><td colspan="8" style="padding-left:52px">
         <button class="add-variant-btn edit-only" onclick="requestAdminUnlock(()=>openEditProductModal('${p.id}'))">+ 옵션 추가 / 수정</button>
       </td></tr>`;
     }
@@ -1998,10 +2057,17 @@ function renderSales(){
   const byPV={};
   logs.forEach(l=>{
     const key=l.productId+'__'+l.variantId;
-    if(!byPV[key])byPV[key]={qty:0,sales:0,cost:0,profit:0,productId:l.productId,variantId:l.variantId};
+    if(!byPV[key])byPV[key]={qty:0,sales:0,cost:0,profit:0,productId:l.productId,variantId:l.variantId,channels:new Set()};
     const p=products.find(x=>x.id===l.productId);if(!p)return;
     const vs=getProductVariants(p);const v=vs.find(x=>x.id===l.variantId)||vs[0];
-    if(v){byPV[key].qty+=l.qty;byPV[key].sales+=v.priceKrw*l.qty;byPV[key].cost+=v.costKrw*l.qty;byPV[key].profit+=(v.priceKrw-v.costKrw)*l.qty;}
+    if(v){
+      const price=l.salePrice||v.priceKrw||0; // salePrice 우선 사용
+      byPV[key].qty+=l.qty;
+      byPV[key].sales+=price*l.qty;
+      byPV[key].cost+=v.costKrw*l.qty;
+      byPV[key].profit+=(price-v.costKrw)*l.qty;
+      if(l.channel)byPV[key].channels.add(l.channel);
+    }
   });
   let tS=0,tP=0,tQ=0;Object.values(byPV).forEach(v=>{tS+=v.sales;tP+=v.profit;tQ+=v.qty;});
   document.getElementById('salesKpi').innerHTML=`
@@ -2010,13 +2076,23 @@ function renderSales(){
     <div class="kpi"><div class="kpi-l">판매 수량</div><div class="kpi-v">${tQ.toLocaleString()}개</div><div class="kpi-s">합계</div></div>
   `;
   const tb=document.getElementById('salesBody');
-  if(!Object.keys(byPV).length){tb.innerHTML='<tr><td colspan="7"><div class="empty">출고 내역이 없습니다</div></td></tr>';}
+  if(!Object.keys(byPV).length){tb.innerHTML='<tr><td colspan="8"><div class="empty">출고 내역이 없습니다</div></td></tr>';}
   else tb.innerHTML=Object.entries(byPV).map(([key,v])=>{
     const p=products.find(x=>x.id===v.productId);
     const vs=p?getProductVariants(p):[];
     const variant=vs.find(x=>x.id===v.variantId);
     const m=pct(v.profit,v.sales);const mc=m>=50?'b-ok':m>=30?'b-warn':'b-low';
-    return`<tr><td style="font-weight:600">${p?p.name:'-'}</td><td><span class="badge b-accent">${variant?.name||'기본'}</span></td><td>${v.qty.toLocaleString()}개</td><td>${won(v.sales)}</td><td>${won(v.cost)}</td><td>${won(v.profit)}</td><td><span class="badge ${mc}">${m}%</span></td></tr>`;
+    const channels=[...v.channels].join(', ')||'-';
+    return`<tr>
+      <td style="font-weight:600">${p?p.name:'-'}</td>
+      <td><span class="badge b-accent">${variant?.name||'기본'}</span></td>
+      <td style="font-size:12px;color:var(--text3)">${channels}</td>
+      <td>${v.qty.toLocaleString()}개</td>
+      <td>${won(v.sales)}</td>
+      <td>${won(v.cost)}</td>
+      <td>${won(v.profit)}</td>
+      <td><span class="badge ${mc}">${m}%</span></td>
+    </tr>`;
   }).join('');
   document.getElementById('profitSummary').innerHTML=`
     <div class="profit-row"><span style="color:var(--text3)">총 매출</span><span>${won(tS)}</span></div>
@@ -2093,6 +2169,45 @@ window.changeMasterPw=function(){
 };
 
 /* ── 빠른 입력 ── */
+/* ── 재고 수량 직접 수정 ── */
+window.quickQtyEdit=async function(productId,variantId,delta){
+  const p=products.find(x=>x.id===productId);if(!p)return;
+  const vs=getProductVariants(p);
+  const vi=vs.findIndex(x=>x.id===variantId);if(vi===-1)return;
+  const newQty=Math.max(0,(vs[vi].qty||0)+delta);
+  const newVs=[...vs];
+  newVs[vi]={...newVs[vi],qty:newQty};
+  await fbSave('products',productId,{...p,variants:newVs,qty:newVs.reduce((s,v)=>s+v.qty,0)});
+  await fbSave('stockLogs','sl'+Date.now(),{productId,variantId,type:delta>0?'in':'out',qty:Math.abs(delta),date:today(),memo:'직접수정'});
+};
+
+window.inlineQtyEdit=function(productId,variantId,currentQty){
+  const el=document.getElementById(`qty-${productId}-${variantId}`);if(!el)return;
+  const input=document.createElement('input');
+  input.type='number';input.value=currentQty;input.min='0';
+  input.style.cssText='width:52px;padding:2px 6px;border:1.5px solid var(--accent);border-radius:6px;font-size:13px;font-weight:600;text-align:center;font-family:inherit;background:var(--bg);color:var(--text);outline:none';
+  el.replaceWith(input);input.focus();input.select();
+  let saved=false;
+  const save=async()=>{
+    if(saved)return;saved=true;
+    const newQty=Math.max(0,parseInt(input.value)||0);
+    if(newQty===currentQty){renderInventory();return;}
+    const p=products.find(x=>x.id===productId);if(!p)return;
+    const vs=JSON.parse(JSON.stringify(getProductVariants(p)));
+    const vi=vs.findIndex(x=>x.id===variantId);if(vi===-1)return;
+    vs[vi].qty=newQty;
+    // 로컬 반영 먼저
+    p.variants=vs;p.qty=vs.reduce((s,v)=>s+v.qty,0);
+    renderInventory();
+    // Firebase 저장
+    await fbSave('products',productId,{...p,variants:vs,qty:vs.reduce((s,v)=>s+v.qty,0)});
+    const delta=newQty-currentQty;
+    await fbSave('stockLogs','sl'+Date.now(),{productId,variantId,type:delta>0?'in':'out',qty:Math.abs(delta),date:today(),memo:'직접수정'});
+  };
+  input.addEventListener('blur',save);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();}if(e.key==='Escape'){saved=true;renderInventory();}});
+};
+
 window.submitQuickInput=async function(){
   if(!isAdmin)return requestAdminUnlock(()=>submitQuickInput());
   const raw=document.getElementById('quickInput').value.trim();
@@ -2321,8 +2436,185 @@ window.submitQuickContact=async function(){
   setTimeout(()=>{res.innerHTML='';},3000);
 };
 
-/* ── NOTES ── */
+/* ── 입출고 내역 관리 ── */
+function renderStockLogs(){
+  const tb=document.getElementById('stockLogBody');if(!tb)return;
+  const filter=document.getElementById('logFilter')?.value||'all';
+  let logs=[...stockLogs].reverse();
+  if(filter==='out')logs=logs.filter(l=>l.type.startsWith('out'));
+  if(filter==='in')logs=logs.filter(l=>l.type==='in');
+  if(!logs.length){tb.innerHTML='<tr><td colspan="8"><div class="empty">내역이 없습니다</div></td></tr>';return;}
+  const typeLabel={in:'입고',out:'출고',adjust:'조정','out-return':'반품'};
+  const typeCls={in:'b-ok',out:'b-warn',adjust:'b-info','out-return':'b-low'};
+  tb.innerHTML=logs.map(l=>{
+    const p=products.find(x=>x.id===l.productId);
+    const vs=p?getProductVariants(p):[];
+    const v=vs.find(x=>x.id===l.variantId);
+    const tl=typeLabel[l.type]||l.type;
+    const tc=typeCls[l.type]||'b-info';
+    return`<tr>
+      <td style="font-size:12px;color:var(--text3);white-space:nowrap">${l.date||'-'}</td>
+      <td style="font-weight:600">${p?p.name:'(삭제된 제품)'}</td>
+      <td style="font-size:12px;color:var(--text2)">${v?v.name:'기본'}</td>
+      <td style="font-size:12px;color:var(--text3)">${l.channel||'-'}</td>
+      <td><span class="badge ${tc}" style="font-size:11px">${tl}</span></td>
+      <td style="font-weight:600">${l.qty}개</td>
+      <td style="font-size:12px;color:var(--text3)">${l.memo||'-'}</td>
+      <td class="edit-only">
+        <button class="btn btn-sm btn-danger" onclick="requestAdminUnlock(()=>deleteStockLog('${l.id}','${l.productId}','${l.variantId}',${l.qty},'${l.type}'))">삭제</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.deleteStockLog=async function(logId,productId,variantId,qty,type){
+  if(!confirm('이 내역을 삭제할까요?\n재고 수량도 함께 되돌아갑니다.'))return;
+  // 재고 수량 되돌리기
+  const p=products.find(x=>x.id===productId);
+  if(p){
+    const vs=JSON.parse(JSON.stringify(getProductVariants(p)));
+    const vi=vs.findIndex(x=>x.id===variantId);
+    if(vi!==-1){
+      // 출고였으면 다시 더하고, 입고였으면 다시 빼기
+      if(type.startsWith('out'))vs[vi].qty=(vs[vi].qty||0)+qty;
+      else if(type==='in')vs[vi].qty=Math.max(0,(vs[vi].qty||0)-qty);
+      await fbSave('products',productId,{...p,variants:vs,qty:vs.reduce((s,v)=>s+v.qty,0)});
+    }
+  }
+  await fbDelete('stockLogs',logId);
+};
 let notes=[];
+/* ── 판매 뷰 탭 ── */
+let currentSalesView='monthly';
+window.switchSalesView=function(view,btn){
+  currentSalesView=view;
+  document.querySelectorAll('.sales-view-tab').forEach(b=>{
+    b.style.color='var(--text2)';b.style.fontWeight='400';b.style.borderBottomColor='transparent';
+  });
+  if(btn){btn.style.color='var(--accent-dark)';btn.style.fontWeight='600';btn.style.borderBottomColor='var(--accent)';}
+  ['monthly','daily','weekly','product','popular'].forEach(v=>{
+    const el=document.getElementById('salesView-'+v);
+    if(el)el.style.display=v===view?'block':'none';
+  });
+  renderSalesView();
+};
+function renderSalesView(){
+  if(currentSalesView==='monthly')renderSales();
+  else if(currentSalesView==='daily')renderDailySales();
+  else if(currentSalesView==='weekly')renderWeeklySales();
+  else if(currentSalesView==='product')renderProductSales();
+  else if(currentSalesView==='popular')renderPopularProducts();
+}
+function getAllOutLogs(){return stockLogs.filter(l=>l.type.startsWith('out'));}
+function getLogSalesData(l){
+  const p=products.find(x=>x.id===l.productId);if(!p)return null;
+  const vs=getProductVariants(p);const v=vs.find(x=>x.id===l.variantId)||vs[0];if(!v)return null;
+  const price=l.salePrice||v.priceKrw||0;const cost=v.costKrw||0;
+  return{p,v,price,cost,sales:price*l.qty,profit:(price-cost)*l.qty};
+}
+function renderDailySales(){
+  const tb=document.getElementById('dailySalesBody');if(!tb)return;
+  const val=document.getElementById('salesMonth')?.value;if(!val){tb.innerHTML='<tr><td colspan="5"><div class="empty">월을 선택해주세요</div></td></tr>';return;}
+  const[y,m]=val.split('-').map(Number);
+  const logs=getAllOutLogs().filter(l=>{const d=new Date(l.date);return d.getFullYear()===y&&d.getMonth()===m-1;});
+  if(!logs.length){tb.innerHTML='<tr><td colspan="5"><div class="empty">데이터가 없습니다</div></td></tr>';return;}
+  const byDay={};
+  logs.forEach(l=>{
+    const d=l.date||today();if(!byDay[d])byDay[d]={qty:0,sales:0,profit:0,channels:new Set()};
+    const s=getLogSalesData(l);if(!s)return;
+    byDay[d].qty+=l.qty;byDay[d].sales+=s.sales;byDay[d].profit+=s.profit;
+    if(l.channel)byDay[d].channels.add(l.channel);
+  });
+  tb.innerHTML=Object.entries(byDay).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,v])=>{
+    const pm=pct(v.profit,v.sales);const mc=pm>=50?'b-ok':pm>=30?'b-warn':'b-low';
+    return`<tr><td style="font-weight:600">${date}</td><td>${v.qty}개</td><td style="color:var(--accent-dark);font-weight:600">${won(v.sales)}</td><td><span class="badge ${mc}">${won(v.profit)}</span></td><td style="font-size:12px;color:var(--text3)">${[...v.channels].join(', ')||'-'}</td></tr>`;
+  }).join('');
+}
+function renderWeeklySales(){
+  const tb=document.getElementById('weeklySalesBody');if(!tb)return;
+  const val=document.getElementById('salesMonth')?.value;if(!val){tb.innerHTML='<tr><td colspan="5"><div class="empty">월을 선택해주세요</div></td></tr>';return;}
+  const[y,m]=val.split('-').map(Number);
+  const logs=getAllOutLogs().filter(l=>{const d=new Date(l.date);return d.getFullYear()===y&&d.getMonth()===m-1;});
+  if(!logs.length){tb.innerHTML='<tr><td colspan="5"><div class="empty">데이터가 없습니다</div></td></tr>';return;}
+  const byWeek={};
+  logs.forEach(l=>{
+    const d=new Date(l.date);const weekNum=Math.ceil(d.getDate()/7);const key=`${weekNum}주차`;
+    const startDay=(weekNum-1)*7+1;const endDay=Math.min(weekNum*7,new Date(y,m,0).getDate());
+    if(!byWeek[key])byWeek[key]={label:key,range:`${m}/${startDay}~${m}/${endDay}`,qty:0,sales:0,profit:0};
+    const s=getLogSalesData(l);if(!s)return;
+    byWeek[key].qty+=l.qty;byWeek[key].sales+=s.sales;byWeek[key].profit+=s.profit;
+  });
+  tb.innerHTML=Object.values(byWeek).map(v=>{
+    const pm=pct(v.profit,v.sales);const mc=pm>=50?'b-ok':pm>=30?'b-warn':'b-low';
+    return`<tr><td style="font-weight:600">${v.label}</td><td style="color:var(--text3);font-size:12px">${v.range}</td><td>${v.qty}개</td><td style="color:var(--accent-dark);font-weight:600">${won(v.sales)}</td><td><span class="badge ${mc}">${won(v.profit)}</span></td></tr>`;
+  }).join('');
+}
+function renderProductSales(){
+  const tb=document.getElementById('productSalesBody');if(!tb)return;
+  const logs=getAllOutLogs();if(!logs.length){tb.innerHTML='<tr><td colspan="7"><div class="empty">데이터가 없습니다</div></td></tr>';return;}
+  const byPV={};
+  logs.forEach(l=>{
+    const key=l.productId+'__'+l.variantId;if(!byPV[key])byPV[key]={productId:l.productId,variantId:l.variantId,qty:0,sales:0,profit:0};
+    const s=getLogSalesData(l);if(!s)return;
+    byPV[key].qty+=l.qty;byPV[key].sales+=s.sales;byPV[key].profit+=s.profit;
+  });
+  tb.innerHTML=Object.values(byPV).sort((a,b)=>b.sales-a.sales).map((v,i)=>{
+    const p=products.find(x=>x.id===v.productId);const vs=p?getProductVariants(p):[];const variant=vs.find(x=>x.id===v.variantId);
+    const m=pct(v.profit,v.sales);const mc=m>=50?'b-ok':m>=30?'b-warn':'b-low';
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+    return`<tr><td style="font-size:15px">${medal}</td><td style="font-weight:600">${p?p.name:'-'}</td><td><span class="badge b-accent" style="font-size:11px">${variant?.name||'기본'}</span></td><td style="font-weight:600">${v.qty}개</td><td style="color:var(--accent-dark);font-weight:600">${won(v.sales)}</td><td>${won(v.profit)}</td><td><span class="badge ${mc}">${m}%</span></td></tr>`;
+  }).join('');
+}
+function renderPopularProducts(){
+  const logs=getAllOutLogs();const byPV={};
+  logs.forEach(l=>{
+    const key=l.productId+'__'+l.variantId;if(!byPV[key])byPV[key]={productId:l.productId,variantId:l.variantId,qty:0,sales:0,profit:0,margin:0};
+    const s=getLogSalesData(l);if(!s)return;
+    byPV[key].qty+=l.qty;byPV[key].sales+=s.sales;byPV[key].profit+=s.profit;
+  });
+  const all=Object.values(byPV);all.forEach(v=>v.margin=pct(v.profit,v.sales));
+  const getName=v=>{const p=products.find(x=>x.id===v.productId);const vs=p?getProductVariants(p):[];const variant=vs.find(x=>x.id===v.variantId);return`${p?p.name:'-'} · ${variant?.name||'기본'}`;};
+  const renderRank=(containerId,sorted,valueKey,formatter)=>{
+    const el=document.getElementById(containerId);if(!el)return;
+    if(!sorted.length){el.innerHTML='<div class="empty">데이터가 없습니다</div>';return;}
+    el.innerHTML=sorted.slice(0,5).map((v,i)=>{
+      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}위`;
+      const barW=sorted[0][valueKey]>0?Math.round(v[valueKey]/sorted[0][valueKey]*100):0;
+      return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span><span style="font-size:15px;margin-right:6px">${medal}</span><span style="font-weight:600">${getName(v)}</span></span><span style="font-weight:700;color:var(--accent-dark)">${formatter(v[valueKey])}</span></div><div class="stock-bar"><div class="stock-fill" style="width:${barW}%;background:var(--accent)"></div></div></div>`;
+    }).join('');
+  };
+  renderRank('popularByQty',[...all].sort((a,b)=>b.qty-a.qty),'qty',v=>v+'개');
+  renderRank('popularByRevenue',[...all].sort((a,b)=>b.sales-a.sales),'sales',won);
+  renderRank('popularByProfit',[...all].sort((a,b)=>b.profit-a.profit),'profit',won);
+  renderRank('popularByMargin',[...all].filter(v=>v.sales>0).sort((a,b)=>b.margin-a.margin),'margin',v=>v+'%');
+}
+window.updateSaleVariants=function(){
+  const pid=document.getElementById('seProduct').value;
+  const p=products.find(x=>x.id===pid);const vs=p?getProductVariants(p):[];
+  document.getElementById('seVariant').innerHTML=vs.map(v=>`<option value="${v.id}">${v.name} (재고 ${v.qty}개, ${won(v.priceKrw)})</option>`).join('');
+  if(vs.length)document.getElementById('sePrice').value=vs[0].priceKrw||'';
+};
+window.saveSaleEntry=async function(){
+  const productId=document.getElementById('seProduct').value;
+  const variantId=document.getElementById('seVariant').value;
+  const qty=parseInt(document.getElementById('seQty').value)||0;
+  if(!qty||qty<=0)return alert('수량을 입력해주세요');
+  const channel=document.getElementById('seChannel').value;
+  const date=document.getElementById('seDate').value||today();
+  const memo=document.getElementById('seMemo').value;
+  const salePrice=parseFloat(document.getElementById('sePrice').value)||0;
+  const p=products.find(x=>x.id===productId);if(!p)return;
+  const vs=JSON.parse(JSON.stringify(getProductVariants(p)));
+  const vi=vs.findIndex(x=>x.id===variantId);if(vi===-1)return;
+  if(vs[vi].qty<qty&&!confirm(`현재 재고(${vs[vi].qty}개)보다 많습니다. 계속할까요?`))return;
+  vs[vi].qty=Math.max(0,vs[vi].qty-qty);
+  await fbSave('products',productId,{...p,variants:vs,qty:vs.reduce((s,v)=>s+v.qty,0)});
+  const logData={productId,variantId,type:'out',qty,date,channel,memo:memo||(channel+' 판매')};
+  if(salePrice>0)logData.salePrice=salePrice;
+  await fbSave('stockLogs','sl'+Date.now(),logData);
+  closeModal('saleEntryModal');renderSalesView();
+};
+
 let currentNoteId=null;
 let currentNoteFilter='전체';
 let noteSaveTimer=null;
@@ -2437,6 +2729,149 @@ window.deleteNote=async function(id){
   if(editor)editor.innerHTML=`<div class="notes-empty-state"><div class="notes-empty-icon">✎</div><div style="font-weight:600;font-size:15px;color:var(--text2)">메모가 삭제됐어요</div><button class="btn btn-primary edit-only" onclick="requestAdminUnlock(newNote)" style="margin-top:8px">+ 새 메모 작성</button></div>`;
 };
 
+/* ── 엑셀 업로드 ── */
+window.importExcel=async function(event){
+  const file=event.target.files[0];if(!file)return;
+  event.target.value=''; // 같은 파일 재업로드 허용
+  const status=document.getElementById('excelUploadStatus');
+  if(status)status.textContent='📂 파일 읽는 중...';
+
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try{
+      let rows=[];
+      // CSV vs Excel 분기
+      if(file.name.endsWith('.csv')){
+        const text=e.target.result;
+        const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+        const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+        rows=lines.slice(1).map(line=>{
+          const vals=line.split(',').map(v=>v.trim().replace(/^"|"$/g,''));
+          const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;
+        });
+      }else{
+        const wb=XLSX.read(e.target.result,{type:'array'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+      }
+
+      if(!rows.length){if(status)status.textContent='❌ 데이터가 없습니다';return;}
+
+      // 컬럼명 정규화 (한글/영문 둘 다 지원)
+      const normalize=row=>{
+        const get=(...keys)=>{for(const k of keys){const v=row[k]||row[k.toLowerCase()]||'';if(v!==undefined&&v!=='')return String(v).trim();}return '';};
+        return{
+          brand:get('브랜드','Brand','brand','BRAND'),
+          name:get('제품명','Product','Name','name','제품'),
+          option:get('옵션명','Option','option','옵션','Color','색상','Size','사이즈'),
+          qty:parseInt(get('수량','Qty','quantity','재고'))||0,
+          costLocal:parseFloat(get('원가','Cost','원가(현지)','cost_local','단가'))||0,
+          currency:(get('통화','Currency','currency')||'EUR').toUpperCase(),
+          priceKrw:parseFloat(get('판매가','Price','판매가(KRW)','price_krw'))||0,
+          country:get('소싱국가','Country','country','국가')||'기타 유럽',
+          category:get('카테고리','Category','category')||'생활용품',
+          safeQty:parseInt(get('안전재고','SafeQty','safe_qty'))||5,
+        };
+      };
+
+      const normalized=rows.map(normalize).filter(r=>r.name);
+      if(!normalized.length){if(status)status.textContent='❌ 제품명이 있는 행이 없습니다';return;}
+
+      // 브랜드+제품명으로 묶기
+      const productMap=new Map();
+      normalized.forEach(row=>{
+        const key=(row.brand||'')+'__'+row.name;
+        if(!productMap.has(key)){
+          productMap.set(key,{
+            brand:row.brand,name:row.name,
+            category:row.category,country:row.country,
+            safeQty:row.safeQty,currency:row.currency,
+            costLocal:row.costLocal,priceKrw:row.priceKrw,
+            variants:[]
+          });
+        }
+        const p=productMap.get(key);
+        if(row.option){
+          p.variants.push({
+            id:'v'+Date.now()+Math.random().toString(36).slice(2,5),
+            name:row.option,
+            qty:row.qty,
+            costKrw:row.costLocal>0?Math.round(row.costLocal*getR(row.currency)):0,
+            priceKrw:row.priceKrw||p.priceKrw
+          });
+        }else{
+          // 옵션 없으면 기본 옵션으로
+          p.variants.push({
+            id:'v'+Date.now()+Math.random().toString(36).slice(2,5),
+            name:'기본',qty:row.qty,
+            costKrw:row.costLocal>0?Math.round(row.costLocal*getR(row.currency)):0,
+            priceKrw:row.priceKrw
+          });
+        }
+      });
+
+      const toSave=[...productMap.values()];
+      const total=toSave.length;
+      if(status)status.textContent=`⏳ ${total}개 제품 저장 중...`;
+
+      let saved=0;
+      for(const p of toSave){
+        // 기존 제품 이름 매칭 (중복 방지)
+        const existing=products.find(x=>
+          x.name.toLowerCase()===p.name.toLowerCase()&&
+          (x.brand||'').toLowerCase()===(p.brand||'').toLowerCase()
+        );
+        const id=existing?.id||'p'+Date.now()+Math.random().toString(36).slice(2,5);
+        const costKrw=p.costLocal>0?Math.round(p.costLocal*getR(p.currency)):0;
+        const variants=p.variants.length?p.variants:[{id:'v'+Date.now(),name:'기본',qty:0,costKrw,priceKrw:p.priceKrw}];
+
+        await fbSave('products',id,{
+          id,name:p.name,brand:p.brand,category:p.category,
+          country:p.country,safeQty:p.safeQty,
+          costLocal:p.costLocal,currency:p.currency,costKrw,
+          priceKrw:p.priceKrw,
+          qty:variants.reduce((s,v)=>s+v.qty,0),
+          variants,createdAt:existing?.createdAt||today()
+        });
+        saved++;
+        if(status)status.textContent=`⏳ ${saved}/${total} 저장 중...`;
+      }
+      if(status)status.innerHTML=`<span style="color:var(--gtxt)">✓ ${saved}개 제품 등록/업데이트 완료!</span>`;
+      setTimeout(()=>{if(status)status.textContent='';},4000);
+    }catch(err){
+      console.error(err);
+      if(status)status.innerHTML=`<span style="color:var(--rtxt)">❌ 오류: ${err.message}</span>`;
+    }
+  };
+  if(file.name.endsWith('.csv'))reader.readAsText(file,'utf-8');
+  else reader.readAsArrayBuffer(file);
+};
+
+/* ── 엑셀 템플릿 다운로드 ── */
+/* ── 템플릿 다운로드 (CSV) ── */
+window.downloadExcelTemplate=function(){
+  const headers=['브랜드','제품명','옵션명','수량','원가','통화','판매가','소싱국가','카테고리','안전재고'];
+  const sample=[
+    ['Clinq','TIA','Silver',10,42.5,'EUR',89000,'독일','헤어ACC',5],
+    ['Clinq','TIA','Gold',5,42.5,'EUR',89000,'독일','헤어ACC',5],
+    ['Clinq','NELE','Silver',10,43.0,'EUR',89000,'독일','헤어ACC',5],
+    ['Impregna','Chamoisine Astic Shine','Small',40,2.12,'EUR',10440,'프랑스','생활용품',10],
+    ['Lorenzi','Toothpaste Squeezer','Black',10,140.5,'EUR',486000,'이탈리아','잡화',5],
+    ['Sorekara','How Many Days','Black',36,3366,'JPY',80000,'일본','잡화',10],
+  ];
+  const rows=[headers,...sample];
+  // BOM 추가해서 엑셀에서 한글 깨짐 방지
+  const csv='\uFEFF'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='HOLIDAYS_재고_템플릿.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+};
+
 /* ── INIT ── */
 document.getElementById('orDate').value=today();
 document.body.classList.add('viewer-mode');
@@ -2444,6 +2879,5 @@ startListeners();
 fetchRates();
 setInterval(()=>fetchRates(),60*60*1000);
 </script>
-
-
-</body></html>
+</body>
+</html>
