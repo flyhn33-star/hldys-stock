@@ -379,14 +379,14 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div id="adminLockBtn">
         <button class="btn btn-sm" style="color:var(--accent-dark);border-color:var(--accent);font-size:12px" onclick="requestAdminUnlock()">🔐 관리자</button>
       </div>
-      <div id="adminUnlockBtn" style="display:none;gap:6px;display:none">
+      <div id="adminUnlockBtn" style="display:none;gap:6px">
         <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('pwModal'))" style="font-size:11px">비번</button>
         <button class="btn btn-sm" style="color:var(--rtxt);font-size:12px" onclick="lockAdmin()">🔓 잠금</button>
       </div>
     </div>
   </div>
   <!-- 관리자 배너 -->
-  <div id="adminBanner" style="display:none;background:var(--gbg);color:var(--gtxt);font-size:12px;padding:5px 2rem;display:none;align-items:center;justify-content:space-between;border-top:1px solid rgba(6,95,70,0.2)">
+  <div id="adminBanner" style="display:none;background:var(--gbg);color:var(--gtxt);font-size:12px;padding:5px 2rem;align-items:center;justify-content:space-between;border-top:1px solid rgba(6,95,70,0.2)">
     <span>👑 관리자 모드 — 데이터 수정 가능</span>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="btn btn-sm edit-only" onclick="exportData()" style="font-size:11px">JSON 내보내기</button>
@@ -442,6 +442,13 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="kpi"><div class="kpi-l">이번 달 수익</div><div class="kpi-v" id="kProfit">₩0</div><div class="kpi-s" id="kProfitSub">마진율 -</div></div>
     </div>
 
+    <!-- 현 재고 전환 가치 -->
+    <div class="card" style="margin-bottom:1rem;background:linear-gradient(135deg,var(--accent-light),var(--bg))">
+      <div class="card-title" style="margin-bottom:1rem">현 재고 전환 가치 <span style="font-weight:400;font-size:10px;color:var(--text3);text-transform:none">— 현재 재고를 모두 판매했을 때</span></div>
+      <div class="kpi-grid" style="margin-bottom:1rem" id="stockValueKpi"></div>
+      <div id="stockValueBrands" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
+    </div>
+
     <!-- 발주 현황 -->
     <div class="card" style="margin-bottom:1rem">
       <div class="card-title" style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center">
@@ -474,6 +481,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
           📥 엑셀 업로드
           <input type="file" accept=".csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
         </label>
+        <button class="btn edit-only" onclick="requestAdminUnlock(autoFixBrands)" style="color:var(--atxt);border-color:var(--atxt)">🏷 브랜드 자동설정</button>
         <button class="btn edit-only" onclick="requestAdminUnlock(openProductModal)">+ 제품 등록</button>
         <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(openStockModal)">입 / 출고 처리</button>
       </div>
@@ -568,6 +576,10 @@ body.viewer-mode .viewer-only{display:inline-flex}
           <div class="fg"><label>부가세 (%)</label><input type="number" id="sVat" value="10" oninput="calcSourcing()"></div>
         </div>
         <div class="form-row">
+          <div class="fg"><label>납부세액 (KRW)</label><input type="number" id="sTax" placeholder="0" oninput="calcSourcing()"></div>
+          <div class="fg"><label>포장비용 (KRW)</label><input type="number" id="sPack" placeholder="0" oninput="calcSourcing()"></div>
+        </div>
+        <div class="form-row">
           <div class="fg"><label>배송비 (KRW)</label><input type="number" id="sShip" placeholder="0" oninput="calcSourcing()"></div>
           <div class="fg"><label>기타 비용 (KRW)</label><input type="number" id="sEtc" placeholder="0" oninput="calcSourcing()"></div>
         </div>
@@ -575,6 +587,8 @@ body.viewer-mode .viewer-only{display:inline-flex}
           <div class="calc-row"><span class="calc-lbl">현지 매입 합계 (KRW)</span><span id="rLocal">-</span></div>
           <div class="calc-row"><span class="calc-lbl">관세</span><span id="rTariff">-</span></div>
           <div class="calc-row"><span class="calc-lbl">부가세</span><span id="rVat">-</span></div>
+          <div class="calc-row"><span class="calc-lbl">납부세액</span><span id="rTax">-</span></div>
+          <div class="calc-row"><span class="calc-lbl">포장비용</span><span id="rPack">-</span></div>
           <div class="calc-row"><span class="calc-lbl">배송 + 기타</span><span id="rShip">-</span></div>
           <div class="calc-row"><span>단위 원가 (1개)</span><span id="rUnit">-</span></div>
         </div>
@@ -584,7 +598,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
         </div>
       </div>
       <div class="card">
-        <div class="card-title">등록 제품 원가</div>
+        <div class="card-title">등록 제품 원가 <span style="font-size:10px;font-weight:400;color:var(--text3);text-transform:none">— 숫자 클릭하여 직접 수정</span></div>
         <div class="tbl-wrap"><table>
           <thead><tr><th>제품명</th><th>원가(현지)</th><th>원가(KRW)</th><th>판매가</th><th>마진</th><th>국가</th></tr></thead>
           <tbody id="sourcingBody"><tr><td colspan="6"><div class="empty">불러오는 중...</div></td></tr></tbody>
@@ -693,7 +707,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
     <div class="page-header">
       <div><div class="page-title">매출 / 수익</div><div class="page-desc">판매 실적 관리</div></div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>{if(!products.length)return alert('먼저 제품을 등록해주세요');document.getElementById('seProduct').innerHTML=products.map(p=>`<option value='${p.id}'>${p.name}</option>`).join('');updateSaleVariants();document.getElementById('seQty').value='1';document.getElementById('seDate').value=today();document.getElementById('seMemo').value='';document.getElementById('sePrice').value='';document.getElementById('seChannel').value='스마트스토어';openModal('saleEntryModal');})">+ 판매 입력</button>
+        <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>{document.getElementById('dSaleDate').value=today();currentDailyChan='스마트스토어';selectDailyChan('스마트스토어');renderDailySaleItems();openModal('saleEntryModal');})">+ 판매 입력</button>
         <button class="btn btn-danger edit-only" onclick="requestAdminUnlock(()=>clearAllOutLogs())" style="font-size:12px">🗑 출고내역 전체삭제</button>
         <select id="salesMonth" onchange="renderSales()" style="padding:7px 11px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit"></select>
       </div>
@@ -713,7 +727,42 @@ body.viewer-mode .viewer-only{display:inline-flex}
 
     <!-- 월별 뷰 -->
     <div id="salesView-monthly">
-      <div class="card"><div class="card-title">제품별 판매</div>
+      <!-- 채널별 매출/수익 KPI -->
+      <div id="salesChanKpi" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:1rem"></div>
+
+      <!-- 일 매출 추이 + 채널 비중 -->
+      <div class="row2" style="margin-bottom:1rem">
+        <div class="card">
+          <div class="card-title">일 매출 추이</div>
+          <div style="position:relative;height:180px"><canvas id="dailyTrendChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">채널 비중</div>
+          <div style="position:relative;height:180px"><canvas id="chanPieChart"></canvas></div>
+          <div id="chanPieLegend" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:11px"></div>
+        </div>
+      </div>
+
+      <!-- SKU 판매 현황 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-title">SKU 판매 현황</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>제품명</th><th style="color:#10b981">스마트스토어</th><th style="color:#f59e0b">쿠팡</th><th>합계</th><th style="color:var(--accent-dark)">단품환산</th></tr></thead>
+          <tbody id="skuSalesBody"><tr><td colspan="6"><div class="empty">판매 데이터가 없습니다</div></td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- 광고 효율 & 손익 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div class="card-title" style="margin-bottom:0">광고 효율 & 손익</div>
+          <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('adModal'))">✏ 광고비 입력</button>
+        </div>
+        <div id="adPerformance"><div class="empty" style="font-size:13px">광고비를 입력해주세요</div></div>
+      </div>
+
+      <!-- 제품별 판매 -->
+      <div class="card"><div class="card-title">제품별 판매 상세</div>
         <div class="tbl-wrap"><table>
           <thead><tr><th>제품명</th><th>옵션</th><th>채널</th><th>판매수량</th><th>매출</th><th>원가</th><th>수익</th><th>마진율</th></tr></thead>
           <tbody id="salesBody"><tr><td colspan="8"><div class="empty">출고 내역을 입력하면 표시됩니다</div></td></tr></tbody>
@@ -806,36 +855,69 @@ body.viewer-mode .viewer-only{display:inline-flex}
   </div>
 </main>
 
-<!-- 판매 입력 모달 -->
-<div class="modal-overlay" id="saleEntryModal">
-  <div class="modal">
-    <div class="modal-title">판매 입력</div>
-    <button class="modal-close" onclick="closeModal('saleEntryModal')">✕</button>
-    <div class="form-row">
-      <div class="fg"><label>제품 선택 *</label><select id="seProduct" onchange="updateSaleVariants()" style="width:100%"></select></div>
-      <div class="fg"><label>옵션</label><select id="seVariant" style="width:100%"></select></div>
+<!-- 광고비 입력 모달 -->
+<div class="modal-overlay" id="adModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-title">📢 광고비 입력</div>
+    <button class="modal-close" onclick="closeModal('adModal')">✕</button>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:1rem" id="adModalMonth"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem">
+      <div><label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">🟢 스마트스토어 광고비 (KRW)</label><input type="number" id="adCostNaver" placeholder="0" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit"></div>
+      <div><label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">🟡 쿠팡 광고비 (KRW)</label><input type="number" id="adCostCoupang" placeholder="0" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit"></div>
+      <div><label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">기타 마케팅 비용 (KRW)</label><input type="number" id="adCostEtc" placeholder="0" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit"></div>
     </div>
-    <div class="form-row">
-      <div class="fg"><label>판매 수량 *</label><input type="number" id="seQty" value="1" min="1"></div>
-      <div class="fg"><label>판매 채널</label>
-        <select id="seChannel">
-          <option value="자사몰">자사몰</option>
-          <option value="스마트스토어">스마트스토어</option>
-          <option value="쿠팡">쿠팡</option>
-          <option value="오픈마켓">오픈마켓</option>
-          <option value="도매">도매</option>
-          <option value="기타">기타</option>
-        </select>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('adModal')">취소</button>
+      <button class="btn btn-primary" onclick="saveAdCosts()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 일 실적 입력 모달 -->
+<div class="modal-overlay" id="saleEntryModal">
+  <div class="modal" style="max-width:600px;max-height:85vh;overflow-y:auto">
+    <div class="modal-title">📅 일 실적 입력</div>
+    <button class="modal-close" onclick="closeModal('saleEntryModal')">✕</button>
+
+    <!-- 날짜 -->
+    <div style="margin-bottom:1.25rem">
+      <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">날짜</label>
+      <input type="date" id="dSaleDate" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit">
+    </div>
+
+    <!-- 채널 탭 -->
+    <div style="display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap">
+      <button id="dChanBtn-스마트스토어" class="d-chan-btn active" onclick="selectDailyChan('스마트스토어')" style="padding:6px 16px;border-radius:99px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;background:#10b981;color:#fff">스마트스토어</button>
+      <button id="dChanBtn-쿠팡" class="d-chan-btn" onclick="selectDailyChan('쿠팡')" style="padding:6px 16px;border-radius:99px;border:2px solid var(--border2);cursor:pointer;font-size:13px;font-weight:500;font-family:inherit;background:transparent;color:var(--text2)">쿠팡</button>
+      <button id="dChanBtn-오픈마켓" class="d-chan-btn" onclick="selectDailyChan('오픈마켓')" style="padding:6px 16px;border-radius:99px;border:2px solid var(--border2);cursor:pointer;font-size:13px;font-weight:500;font-family:inherit;background:transparent;color:var(--text2)">오픈마켓</button>
+    </div>
+
+    <!-- 제품별 수량 입력 -->
+    <div id="dSaleItems" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem"></div>
+
+    <!-- 채널별 추가 비용 (쿠팡) -->
+    <div id="dExtraCosts" style="display:none;margin-bottom:1.25rem">
+      <div style="font-size:12px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">추가 비용</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">물류비 (KRW)</label><input type="number" id="dLogisticsCost" placeholder="0" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit"></div>
+        <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">판매자할인쿠폰</label><input type="number" id="dCouponCost" placeholder="0" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit"></div>
+        <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">광고비 (KRW)</label><input type="number" id="dAdCost" placeholder="0" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit"></div>
       </div>
     </div>
-    <div class="form-row">
-      <div class="fg"><label>판매일</label><input type="date" id="seDate"></div>
-      <div class="fg"><label>판매가 (개당, KRW)</label><input type="number" id="sePrice" placeholder="0 = 등록가 사용"></div>
+
+    <!-- 합계 미리보기 -->
+    <div id="dSalePreview" style="background:var(--bg2);border-radius:var(--rsm);padding:12px 16px;margin-bottom:1.25rem;font-size:13px;display:none">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="color:var(--text3)">총 판매수량</span><span id="dTotalQty" style="font-weight:600">0개</span>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="color:var(--text3)">예상 매출</span><span id="dTotalSales" style="font-weight:700;color:var(--accent-dark)">₩0</span>
+      </div>
     </div>
-    <div class="fg" style="margin-bottom:14px"><label>메모</label><input type="text" id="seMemo" placeholder="선택사항"></div>
+
     <div class="modal-foot">
       <button class="btn" onclick="closeModal('saleEntryModal')">취소</button>
-      <button class="btn btn-primary" onclick="saveSaleEntry()">판매 기록</button>
+      <button class="btn btn-primary" onclick="saveDailySales()">저장</button>
     </div>
   </div>
 </div>
@@ -932,10 +1014,24 @@ body.viewer-mode .viewer-only{display:inline-flex}
         <select id="pmCur" onchange="updatePmKrw()"><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option><option value="CHF">CHF</option><option value="SEK">SEK</option><option value="DKK">DKK</option><option value="CNY">CNY</option><option value="JPY">JPY</option><option value="USD">USD</option></select>
       </div>
     </div>
+    <!-- 원가 추가 항목 -->
     <div class="form-row">
-      <div class="fg"><label>기본 원가 KRW <span style="font-size:10px;color:var(--accent)">(자동)</span></label><input type="number" id="pmCostKrw" class="auto"></div>
+      <div class="fg"><label>관세율 (%)</label><input type="number" id="pmTariff" value="0" placeholder="0" oninput="updatePmKrw()"></div>
+      <div class="fg"><label>부가세 (%)</label><input type="number" id="pmVat" value="10" placeholder="10" oninput="updatePmKrw()"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>납부세액 (KRW, 1개당)</label><input type="number" id="pmTax" value="0" placeholder="0" oninput="updatePmKrw()"></div>
+      <div class="fg"><label>포장비용 (KRW, 1개당)</label><input type="number" id="pmPack" value="0" placeholder="0" oninput="updatePmKrw()"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>배송비 (KRW, 1개당)</label><input type="number" id="pmShip" value="0" placeholder="0" oninput="updatePmKrw()"></div>
+      <div class="fg"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>단위 원가 KRW <span style="font-size:10px;color:var(--accent)">(자동계산)</span></label><input type="number" id="pmCostKrw" class="auto" style="background:var(--accent-light);font-weight:700"></div>
       <div class="fg"><label>기본 판매가 (KRW)</label><input type="number" id="pmPrice" placeholder="0"></div>
     </div>
+    <div style="font-size:11px;color:var(--text3);margin:-8px 0 12px;padding:8px 12px;background:var(--bg2);border-radius:var(--rsm)" id="pmCostBreakdown">현지가 입력 시 자동 계산됩니다</div>
 
     <div class="sec-div">옵션 설정 <span style="font-size:11px;color:var(--text3);font-weight:400;text-transform:none">(색상, 사이즈 등 — 없으면 비워두세요)</span></div>
     <div class="variant-editor">
@@ -1073,6 +1169,7 @@ let products  = [];
 let stockLogs = [];
 let orders    = [];
 let contacts  = [];
+let notes     = [];
 
 /* ── FIREBASE ── */
 function setSyncState(s){
@@ -1200,12 +1297,12 @@ function renderBrandNav(){
   const list=document.getElementById('brandNavList');
   if(!list)return;
   list.innerHTML=[...brands.entries()].map(([name,info])=>{
-    // 여러 국가면 첫번째, 아니면 하나
-    const flags=[...info.countries].map(c=>countryFlag[c]||'🌐').join('');
+    const flags=[...info.countries].map(c=>countryFlag[c]||'').filter(Boolean).join('');
     const isActive=currentBrand===name;
     const safe=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const displayName=name==='미분류'?'브랜드 미설정':name;
     return`<button class="brand-nav-item${isActive?' active':''}" onclick="switchPage('inventory',document.getElementById('navInventory'));filterBrand('${safe}')">
-      <span>${flags} ${name}</span>
+      <span>${flags} ${displayName}</span>
       <span class="brand-count">${info.products.length}</span>
     </button>`;
   }).join('');
@@ -1214,9 +1311,10 @@ function renderBrandNav(){
   if(!tabs)return;
   const allTab=`<button class="brand-tab${currentBrand==='전체'?' active':''}" onclick="filterBrand('전체')">전체 (${total})</button>`;
   const brandTabs=[...brands.entries()].map(([name,info])=>{
-    const flags=[...info.countries].map(c=>countryFlag[c]||'🌐').join('');
+    const flags=[...info.countries].map(c=>countryFlag[c]||'').filter(Boolean).join('');
     const safe=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    return`<button class="brand-tab${currentBrand===name?' active':''}" onclick="filterBrand('${safe}')">${flags} ${name} <span style="opacity:0.6">(${info.products.length})</span></button>`;
+    const displayName=name==='미분류'?'브랜드 미설정':name;
+    return`<button class="brand-tab${currentBrand===name?' active':''}" onclick="filterBrand('${safe}')">${flags} ${displayName} <span style="opacity:0.6">(${info.products.length})</span></button>`;
   }).join('');
   tabs.innerHTML=allTab+brandTabs;
 }
@@ -1323,7 +1421,6 @@ window.switchPage=function(id,btn){
   if(id==='notes'){renderNotesList();}
   if(id==='sales'){initSalesMonth();renderSales();renderStockLogs();renderSalesView();}
 };
-window.openModal=id=>document.getElementById(id).classList.add('open');
 window.closeModal=id=>document.getElementById(id).classList.remove('open');
 document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
 
@@ -1397,10 +1494,11 @@ function renderDash(){
   if(oe){
     // 발주예정: 대기중
     const pendingOrders=orders.filter(o=>o.status==='pending');
-    // 발주완료: 주문준비완료/결제대기/배송중/입고완료
     const confirmedOrders=orders.filter(o=>['preparing','payment','shipping','arrived'].includes(o.status));
+    const doneOrders=confirmedOrders;
     const pendingKrw=pendingOrders.reduce((s,o)=>s+(o.amountKrw||0),0);
     const confirmedKrw=confirmedOrders.reduce((s,o)=>s+(o.amountKrw||0),0);
+    const doneKrw=confirmedKrw;
 
     if(ot)ot.innerHTML=`
       <span style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
@@ -1451,24 +1549,71 @@ function renderDash(){
     }
   }
 
+  // 현 재고 전환 가치
+  const svKpi=document.getElementById('stockValueKpi');
+  const svBrands=document.getElementById('stockValueBrands');
+  if(svKpi&&products.length){
+    let totalStockSales=0,totalStockCost=0,totalStockQty=0;
+    products.forEach(p=>{
+      const vs=getProductVariants(p);
+      vs.forEach(v=>{
+        totalStockSales+=(v.priceKrw||0)*(v.qty||0);
+        totalStockCost+=(v.costKrw||0)*(v.qty||0);
+        totalStockQty+=(v.qty||0);
+      });
+    });
+    const stockProfit=totalStockSales-totalStockCost;
+    const stockMargin=totalStockSales>0?Math.round(stockProfit/totalStockSales*100):0;
+    svKpi.innerHTML=`
+      <div class="kpi"><div class="kpi-l">예상 총매출</div><div class="kpi-v" style="font-size:20px">${won(totalStockSales)}</div><div class="kpi-s">현 재고 전량 판매 시</div></div>
+      <div class="kpi"><div class="kpi-l">예상 매출이익</div><div class="kpi-v" style="font-size:20px;color:var(--gtxt)">${won(stockProfit)}</div><div class="kpi-s">마진율 ${stockMargin}%</div></div>
+      <div class="kpi"><div class="kpi-l">재고 원가 가치</div><div class="kpi-v" style="font-size:20px">${won(totalStockCost)}</div><div class="kpi-s">총 ${totalStockQty.toLocaleString()}개</div></div>
+    `;
+
+    // 브랜드별 카드
+    const brands=getBrands();
+    svBrands.innerHTML=[...brands.entries()].map(([brandName,info])=>{
+      let bSales=0,bCost=0,bQty=0;
+      info.products.forEach(p=>{
+        const vs=getProductVariants(p);
+        vs.forEach(v=>{bSales+=(v.priceKrw||0)*(v.qty||0);bCost+=(v.costKrw||0)*(v.qty||0);bQty+=(v.qty||0);});
+      });
+      const bMargin=bSales>0?Math.round((bSales-bCost)/bSales*100):0;
+      const flags=[...info.countries].map(c=>countryFlag[c]||'').filter(Boolean).join('');
+      const mc=bMargin>=50?'var(--gtxt)':bMargin>=30?'var(--atxt)':'var(--rtxt)';
+      return`<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);padding:1rem">
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px">${flags} ${brandName}</div>
+        <div style="font-size:20px;font-weight:700;color:var(--accent-dark);margin-bottom:4px">${won(bSales)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">원가 ${won(bCost)} · ${bQty}개</div>
+        <div style="display:flex;justify-content:space-between;font-size:12px">
+          <span style="color:var(--text3)">마진율</span>
+          <span style="font-weight:700;color:${mc}">${bMargin}%</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
   const se=document.getElementById('dashStock');
   if(!se)return;
   if(!products.length){se.innerHTML='<div class="empty">제품을 등록해주세요</div>';}
   else{
-    // 브랜드별 재고 현황
     const brands=getBrands();
     se.innerHTML=[...brands.entries()].map(([brandName,info])=>{
       const totalQty=info.products.reduce((s,p)=>s+getProductVariants(p).reduce((ss,v)=>ss+(v.qty||0),0),0);
       const totalSafe=info.products.reduce((s,p)=>s+(p.safeQty||5)*getProductVariants(p).length,0);
       const bar=Math.min(100,totalSafe>0?Math.round(totalQty/totalSafe*100):100);
       const col=bar>80?'#10b981':bar>50?'#38bdf8':bar>20?'#f59e0b':'#ef4444';
-      const flags=[...info.countries].map(c=>countryFlag[c]||'🌐').join('');
-      return`<div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-          <span style="font-weight:700">${flags} ${brandName}</span>
-          <span style="color:var(--text3);font-size:12px">${totalQty}개 · ${info.products.length}제품</span>
+      const flags=[...info.countries].map(c=>countryFlag[c]||'🌐').join(' ');
+      const displayName=brandName==='미분류'?'브랜드 미설정':brandName;
+      return`<div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:5px">
+          <span style="font-weight:700;font-size:14px">${flags} ${displayName}</span>
+          <span style="color:var(--accent-dark);font-weight:600">${totalQty.toLocaleString()}개</span>
         </div>
-        <div class="stock-bar"><div class="stock-fill" style="width:${bar}%;background:${col}"></div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="stock-bar" style="flex:1"><div class="stock-fill" style="width:${bar}%;background:${col}"></div></div>
+          <span style="font-size:11px;color:var(--text3);min-width:32px;text-align:right">${bar}%</span>
+        </div>
       </div>`;
     }).join('');
   }
@@ -1634,8 +1779,13 @@ window.openProductModal=function(){
   document.getElementById('productModalTitle').textContent='제품 등록';
   ['pmName','pmBrand','pmCat','pmCostLocal','pmCostKrw','pmPrice'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pmSafe').value='5';
+  document.getElementById('pmTariff').value='0';
+  document.getElementById('pmVat').value='10';
+  document.getElementById('pmTax').value='0';
+  document.getElementById('pmPack').value='0';
+  document.getElementById('pmShip').value='0';
+  document.getElementById('pmCostBreakdown').textContent='현지가 입력 시 자동 계산됩니다';
   document.getElementById('variantList').innerHTML='';
-  // 현재 브랜드 필터 중이면 브랜드명 자동 입력
   if(currentBrand!=='전체')document.getElementById('pmBrand').value=currentBrand;
   openModal('productModal');
 };
@@ -1652,32 +1802,51 @@ window.openEditProductModal=function(id){
   document.getElementById('pmCur').value=p.currency||'EUR';
   document.getElementById('pmCostKrw').value=p.costKrw||'';
   document.getElementById('pmPrice').value=p.priceKrw||'';
+  document.getElementById('pmTariff').value=p.tariff||0;
+  document.getElementById('pmVat').value=p.vat||10;
+  document.getElementById('pmTax').value=p.tax||0;
+  document.getElementById('pmPack').value=p.pack||0;
+  document.getElementById('pmShip').value=p.ship||0;
+  document.getElementById('pmCostBreakdown').textContent='현지가 입력 시 자동 계산됩니다';
   const vl=document.getElementById('variantList');
   vl.innerHTML='';
   if(p.variants&&p.variants.length)p.variants.forEach(v=>addVariantRow(v));
   openModal('productModal');
 };
 
-window.addVariantRow=function(v=null){
-  const vl=document.getElementById('variantList');
-  const vid='v'+Date.now()+Math.random().toString(36).slice(2,6);
-  const div=document.createElement('div');
-  div.className='variant-item';
-  div.dataset.vid=v?.id||vid;
-  div.innerHTML=`
-    <input type="text" placeholder="옵션명 (예: Silver)" value="${v?.name||''}">
-    <input type="number" placeholder="재고" value="${v?.qty||0}" style="text-align:center">
-    <input type="number" placeholder="원가" value="${v?.costKrw||''}" style="text-align:right">
-    <input type="number" placeholder="판매가" value="${v?.priceKrw||''}" style="text-align:right">
-    <button class="variant-remove" onclick="this.parentElement.remove()">×</button>
-  `;
-  vl.appendChild(div);
-};
-
 window.updatePmKrw=function(){
-  const v=parseFloat(document.getElementById('pmCostLocal').value)||0;
-  const c=document.getElementById('pmCur').value;
-  document.getElementById('pmCostKrw').value=v>0?Math.round(v*getR(c)):'';
+  const costLocal=parseFloat(document.getElementById('pmCostLocal').value)||0;
+  const cur=document.getElementById('pmCur').value;
+  const rate=R[cur]||1;
+  const tariff=parseFloat(document.getElementById('pmTariff').value)||0;
+  const vat=parseFloat(document.getElementById('pmVat').value)||0;
+  const tax=parseFloat(document.getElementById('pmTax').value)||0;
+  const pack=parseFloat(document.getElementById('pmPack').value)||0;
+  const ship=parseFloat(document.getElementById('pmShip').value)||0;
+
+  if(!costLocal){
+    document.getElementById('pmCostKrw').value='';
+    document.getElementById('pmCostBreakdown').textContent='현지가 입력 시 자동 계산됩니다';
+    return;
+  }
+
+  const localKrw=Math.round(costLocal*rate);
+  const tariffAmt=Math.round(localKrw*(tariff/100));
+  const vatAmt=Math.round((localKrw+tariffAmt)*(vat/100));
+  const total=localKrw+tariffAmt+vatAmt+tax+pack+ship;
+
+  document.getElementById('pmCostKrw').value=total;
+
+  // 내역 표시
+  const bd=document.getElementById('pmCostBreakdown');
+  let parts=[`현지가 ${won(localKrw)}`];
+  if(tariffAmt>0)parts.push(`관세 +${won(tariffAmt)}`);
+  if(vatAmt>0)parts.push(`부가세 +${won(vatAmt)}`);
+  if(tax>0)parts.push(`납부세액 +${won(tax)}`);
+  if(pack>0)parts.push(`포장 +${won(pack)}`);
+  if(ship>0)parts.push(`배송 +${won(ship)}`);
+  parts.push(`= 단위원가 ${won(total)}`);
+  if(bd)bd.innerHTML=parts.join(' · ');
 };
 
 window.saveProduct=function(){
@@ -1704,6 +1873,11 @@ window.saveProduct=function(){
     country:document.getElementById('pmCountry').value,
     safeQty:parseInt(document.getElementById('pmSafe').value)||5,
     costLocal,currency:cur,costKrw,priceKrw,
+    tariff:parseFloat(document.getElementById('pmTariff').value)||0,
+    vat:parseFloat(document.getElementById('pmVat').value)||0,
+    tax:parseFloat(document.getElementById('pmTax').value)||0,
+    pack:parseFloat(document.getElementById('pmPack').value)||0,
+    ship:parseFloat(document.getElementById('pmShip').value)||0,
     qty:variants.length?variants.reduce((s,v)=>s+v.qty,0):0,
     variants,createdAt:today()
   };
@@ -1784,15 +1958,23 @@ window.calcSourcing=function(){
   const qty=parseFloat(document.getElementById('sQty').value)||1;
   const tp=parseFloat(document.getElementById('sTariff').value)||0;
   const vp=parseFloat(document.getElementById('sVat').value)||0;
+  const tax=parseFloat(document.getElementById('sTax').value)||0;
+  const pack=parseFloat(document.getElementById('sPack').value)||0;
   const ship=parseFloat(document.getElementById('sShip').value)||0;
   const etc=parseFloat(document.getElementById('sEtc').value)||0;
   const margin=parseFloat(document.getElementById('sMargin').value)||50;
-  const local=price*rate*qty;const tariff=local*(tp/100);const vat=(local+tariff)*(vp/100);
-  const total=local+tariff+vat+ship+etc;const unit=total/qty;const suggest=margin<100?unit/(1-margin/100):0;
+  const local=price*rate*qty;
+  const tariff=local*(tp/100);
+  const vat=(local+tariff)*(vp/100);
+  const total=local+tariff+vat+tax+pack+ship+etc;
+  const unit=total/qty;
+  const suggest=margin<100?unit/(1-margin/100):0;
   const f=v=>v>0?won(Math.round(v)):'-';
   document.getElementById('rLocal').textContent=f(local);
   document.getElementById('rTariff').textContent=tp>0?f(tariff):'해당없음';
   document.getElementById('rVat').textContent=f(vat);
+  document.getElementById('rTax').textContent=tax>0?f(tax):'-';
+  document.getElementById('rPack').textContent=pack>0?f(pack):'-';
   document.getElementById('rShip').textContent=f(ship+etc);
   document.getElementById('rUnit').textContent=f(unit);
   document.getElementById('rSuggest').textContent=suggest>0?won(Math.round(suggest)):'-';
@@ -1801,10 +1983,60 @@ function renderSourcing(){
   const tb=document.getElementById('sourcingBody');if(!tb)return;
   if(!products.length){tb.innerHTML='<tr><td colspan="6"><div class="empty">제품을 등록하면 표시됩니다</div></td></tr>';return;}
   tb.innerHTML=products.map(p=>{
-    const m=pct(p.priceKrw-p.costKrw,p.priceKrw);const mc=m>=50?'b-ok':m>=30?'b-warn':'b-low';
-    return`<tr><td style="font-weight:600">${p.name}</td><td style="color:var(--text3)">${fmtL(p.costLocal,p.currency||'EUR')}</td><td>${p.costKrw?won(p.costKrw):'-'}</td><td>${p.priceKrw?won(p.priceKrw):'-'}</td><td>${m>0?`<span class="badge ${mc}">${m}%</span>`:'-'}</td><td>${p.country}</td></tr>`;
+    const m=pct(p.priceKrw-p.costKrw,p.priceKrw);
+    const mc=m>=50?'b-ok':m>=30?'b-warn':'b-low';
+    const editStyle=`cursor:pointer;padding:3px 6px;border-radius:4px;transition:background 0.1s`;
+    const editHint=`onmouseenter="this.style.background='var(--accent-light)'" onmouseleave="this.style.background=''"`;
+    return`<tr>
+      <td style="font-weight:600">${p.name}<br><span style="font-size:10px;color:var(--text3)">${p.brand||''}</span></td>
+      <td style="color:var(--text3)">${fmtL(p.costLocal,p.currency||'EUR')}</td>
+      <td>
+        <span id="sc-cost-${p.id}" style="${editStyle}" class="edit-only" title="클릭하여 수정"
+          ${editHint} onclick="requestAdminUnlock(()=>inlineSourcingEdit('${p.id}','costKrw',${p.costKrw||0}))">
+          ${p.costKrw?won(p.costKrw):'-'}
+        </span>
+        <span class="viewer-only">${p.costKrw?won(p.costKrw):'-'}</span>
+      </td>
+      <td>
+        <span id="sc-price-${p.id}" style="${editStyle}" class="edit-only" title="클릭하여 수정"
+          ${editHint} onclick="requestAdminUnlock(()=>inlineSourcingEdit('${p.id}','priceKrw',${p.priceKrw||0}))">
+          ${p.priceKrw?won(p.priceKrw):'-'}
+        </span>
+        <span class="viewer-only">${p.priceKrw?won(p.priceKrw):'-'}</span>
+      </td>
+      <td>${m>0?`<span class="badge ${mc}">${m}%</span>`:'-'}</td>
+      <td>${p.country}</td>
+    </tr>`;
   }).join('');
 }
+
+window.inlineSourcingEdit=function(productId, field, currentVal){
+  const elId=`sc-${field==='costKrw'?'cost':'price'}-${productId}`;
+  const el=document.getElementById(elId);if(!el)return;
+  const label=field==='costKrw'?'원가 (KRW)':'판매가 (KRW)';
+  const input=document.createElement('input');
+  input.type='number';input.value=currentVal||'';input.min='0';
+  input.placeholder=label;
+  input.style.cssText='width:110px;padding:3px 8px;border:1.5px solid var(--accent);border-radius:6px;font-size:13px;font-weight:600;text-align:right;font-family:inherit;background:var(--bg);color:var(--text);outline:none';
+  el.replaceWith(input);input.focus();input.select();
+  let saved=false;
+  const save=()=>{
+    if(saved)return;saved=true;
+    const newVal=Math.max(0,parseInt(input.value)||0);
+    const p=products.find(x=>x.id===productId);if(!p)return;
+    const updated={...p,[field]:newVal};
+    // 옵션들도 일괄 업데이트
+    if(p.variants&&p.variants.length){
+      updated.variants=p.variants.map(v=>({...v,[field]:newVal}));
+    }
+    const idx=products.findIndex(x=>x.id===productId);
+    if(idx>=0)products[idx]=updated;
+    renderSourcing();renderAll();
+    setDoc(doc(db,'products',productId),updated).then(()=>setSyncState('ok')).catch(e=>console.error(e));
+  };
+  input.addEventListener('blur',save);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();}if(e.key==='Escape'){saved=true;renderSourcing();}});
+};
 
 /* ── ORDERS ── */
 const ORDER_STATUS={
@@ -2048,27 +2280,132 @@ function initSalesMonth(){
 function renderSales(){
   const val=document.getElementById('salesMonth')?.value;if(!val)return;
   const[y,m]=val.split('-').map(Number);const logs=mLogs(y,m-1);
+  const CHANS=['스마트스토어','쿠팡','오픈마켓'];
+  const CHAN_COL={'스마트스토어':'#10b981','쿠팡':'#f59e0b','오픈마켓':'#3b82f6'};
+
+  // 채널별 집계
+  const chanData={};
+  CHANS.forEach(c=>chanData[c]={sales:0,cost:0,profit:0,qty:0});
   const byPV={};
+  const byProduct={};
   logs.forEach(l=>{
+    const p=products.find(x=>x.id===l.productId);if(!p)return;
+    const vs=getProductVariants(p);const v=vs.find(x=>x.id===l.variantId)||vs[0];if(!v)return;
+    const price=l.salePrice||v.priceKrw||0;const cost=v.costKrw||0;
+    const chan=l.channel||'스마트스토어';
+    if(chanData[chan]){chanData[chan].sales+=price*l.qty;chanData[chan].cost+=cost*l.qty;chanData[chan].profit+=(price-cost)*l.qty;chanData[chan].qty+=l.qty;}
+    // byPV
     const key=l.productId+'__'+l.variantId;
     if(!byPV[key])byPV[key]={qty:0,sales:0,cost:0,profit:0,productId:l.productId,variantId:l.variantId,channels:new Set()};
-    const p=products.find(x=>x.id===l.productId);if(!p)return;
-    const vs=getProductVariants(p);const v=vs.find(x=>x.id===l.variantId)||vs[0];
-    if(v){
-      const price=l.salePrice||v.priceKrw||0; // salePrice 우선 사용
-      byPV[key].qty+=l.qty;
-      byPV[key].sales+=price*l.qty;
-      byPV[key].cost+=v.costKrw*l.qty;
-      byPV[key].profit+=(price-v.costKrw)*l.qty;
-      if(l.channel)byPV[key].channels.add(l.channel);
-    }
+    byPV[key].qty+=l.qty;byPV[key].sales+=price*l.qty;byPV[key].cost+=cost*l.qty;byPV[key].profit+=(price-cost)*l.qty;
+    if(l.channel)byPV[key].channels.add(l.channel);
+    // byProduct (SKU 현황용)
+    if(!byProduct[p.id])byProduct[p.id]={name:p.name,chans:{}};
+    if(!byProduct[p.id].chans[chan])byProduct[p.id].chans[chan]=0;
+    byProduct[p.id].chans[chan]+=l.qty;
   });
-  let tS=0,tP=0,tQ=0;Object.values(byPV).forEach(v=>{tS+=v.sales;tP+=v.profit;tQ+=v.qty;});
+
+  let tS=0,tP=0,tQ=0;
+  Object.values(byPV).forEach(v=>{tS+=v.sales;tP+=v.profit;tQ+=v.qty;});
+
+  // KPI
   document.getElementById('salesKpi').innerHTML=`
     <div class="kpi"><div class="kpi-l">총 매출</div><div class="kpi-v">${won(tS)}</div><div class="kpi-s">출고 ${logs.length}건</div></div>
     <div class="kpi"><div class="kpi-l">총 수익</div><div class="kpi-v">${won(tP)}</div><div class="kpi-s">마진율 ${pct(tP,tS)}%</div></div>
     <div class="kpi"><div class="kpi-l">판매 수량</div><div class="kpi-v">${tQ.toLocaleString()}개</div><div class="kpi-s">합계</div></div>
   `;
+
+  // 채널별 KPI
+  const chanKpi=document.getElementById('salesChanKpi');
+  if(chanKpi)chanKpi.innerHTML=CHANS.filter(c=>chanData[c].sales>0).map(c=>{
+    const d=chanData[c];const m=pct(d.profit,d.sales);
+    return`<div class="kpi" style="border-top:3px solid ${CHAN_COL[c]}">
+      <div class="kpi-l" style="color:${CHAN_COL[c]}">${c} 매출</div>
+      <div class="kpi-v" style="font-size:20px">${won(d.sales)}</div>
+      <div style="font-size:13px;font-weight:600;color:var(--gtxt);margin-top:6px">${won(d.profit)}</div>
+      <div class="kpi-s">수익률 ${m}%</div>
+    </div>`;
+  }).join('');
+
+  // 일별 추이 차트
+  const dayMap={};
+  logs.forEach(l=>{
+    const p=products.find(x=>x.id===l.productId);if(!p)return;
+    const vs=getProductVariants(p);const v=vs.find(x=>x.id===l.variantId)||vs[0];if(!v)return;
+    const price=l.salePrice||v.priceKrw||0;
+    const d=l.date||today();const chan=l.channel||'스마트스토어';
+    if(!dayMap[d])dayMap[d]={};
+    if(!dayMap[d][chan])dayMap[d][chan]=0;
+    dayMap[d][chan]+=price*l.qty;
+  });
+  const days=Array.from({length:new Date(y,m,0).getDate()},(_,i)=>`${y}-${String(m).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`);
+  const dLabels=days.map(d=>parseInt(d.split('-')[2])+'일');
+  const chanColors=Object.values(CHAN_COL);
+  const activeChans=CHANS.filter(c=>chanData[c].sales>0);
+  const dtCanvas=document.getElementById('dailyTrendChart');
+  if(dtCanvas){
+    if(window._dtChart)window._dtChart.destroy();
+    window._dtChart=new Chart(dtCanvas.getContext('2d'),{
+      type:'bar',
+      data:{labels:dLabels,datasets:activeChans.map(c=>({label:c,data:days.map(d=>Math.round((dayMap[d]?.[c]||0)/10000)*10000),backgroundColor:CHAN_COL[c]+'cc',borderRadius:3,stack:'s'}))},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9},maxTicksLimit:15}},y:{stacked:true,ticks:{font:{size:10},callback:v=>v>=10000?Math.round(v/10000)+'만':v},grid:{color:'rgba(100,180,240,0.08)'}}}}
+    });
+  }
+
+  // 채널 비중 도넛
+  const pieCanvas=document.getElementById('chanPieChart');
+  const pieLegend=document.getElementById('chanPieLegend');
+  if(pieCanvas){
+    if(window._pieChart)window._pieChart.destroy();
+    const pChans=activeChans;
+    const pData=pChans.map(c=>chanData[c].sales);
+    window._pieChart=new Chart(pieCanvas.getContext('2d'),{
+      type:'doughnut',
+      data:{labels:pChans,datasets:[{data:pData,backgroundColor:pChans.map(c=>CHAN_COL[c]),borderWidth:0,hoverOffset:4}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}
+    });
+    if(pieLegend)pieLegend.innerHTML=pChans.map(c=>`<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:${CHAN_COL[c]};display:inline-block"></span>${c} ${pct(chanData[c].sales,tS)}%</span>`).join('');
+  }
+
+  // SKU 판매 현황
+  const skuTb=document.getElementById('skuSalesBody');
+  if(skuTb){
+    const pArr=Object.entries(byProduct);
+    if(!pArr.length){skuTb.innerHTML='<tr><td colspan="6"><div class="empty">데이터 없음</div></td></tr>';}
+    else{
+      let totals={'스마트스토어':0,'쿠팡':0};
+      skuTb.innerHTML=pArr.map(([pid,info])=>{
+        const n=info.chans['스마트스토어']||0,c=info.chans['쿠팡']||0;
+        const tot=n+c+Object.entries(info.chans).filter(([k])=>!['스마트스토어','쿠팡'].includes(k)).reduce((s,[,v])=>s+v,0);
+        totals['스마트스토어']+=n;totals['쿠팡']+=c;
+        const p=products.find(x=>x.id===pid);
+        const variants=p?getProductVariants(p):[];
+        const unitSales=variants.reduce((s,v)=>{
+          const logs2=logs.filter(l=>l.productId===pid&&l.variantId===v.id);
+          return s+logs2.reduce((ss,l)=>ss+l.qty*(l.salePrice||v.priceKrw||0),0);
+        },0);
+        return`<tr>
+          <td style="font-weight:600">${info.name}</td>
+          <td style="color:#10b981;font-weight:600;text-align:center">${n||'-'}</td>
+          <td style="color:#f59e0b;font-weight:600;text-align:center">${c||'-'}</td>
+          <td style="font-weight:700;text-align:center">${tot}</td>
+          <td style="color:var(--accent-dark);font-weight:700;text-align:right">${unitSales>0?won(unitSales):'-'}</td>
+        </tr>`;
+      }).join('');
+      skuTb.innerHTML+=`<tr style="background:var(--bg2);font-weight:700">
+        <td>합계</td>
+        <td style="color:#10b981;text-align:center">${totals['스마트스토어']||'-'}</td>
+        <td style="color:#f59e0b;text-align:center">${totals['쿠팡']||'-'}</td>
+        <td style="text-align:center">${Object.values(totals).reduce((s,v)=>s+v,0)}</td>
+        <td style="color:var(--accent-dark);text-align:right">${won(tS)}</td>
+      </tr>`;
+    }
+  }
+
+  // 광고 효율
+  renderAdPerformance(val,tS,chanData);
+
+  // 제품별 상세
   const tb=document.getElementById('salesBody');
   if(!Object.keys(byPV).length){tb.innerHTML='<tr><td colspan="8"><div class="empty">출고 내역이 없습니다</div></td></tr>';}
   else tb.innerHTML=Object.entries(byPV).map(([key,v])=>{
@@ -2302,46 +2639,6 @@ window.submitQuickInput=async function(){
 };
 
 /* ── 발주 빠른 입력 ── */
-window.submitQuickOrder=async function(){
-  if(!isAdmin)return requestAdminUnlock(()=>submitQuickOrder());
-  const raw=document.getElementById('quickOrderInput').value.trim();
-  const res=document.getElementById('quickOrderResult');
-  if(!raw)return;
-
-  const parts=raw.split(',').map(s=>s.trim());
-  if(parts.length<3){res.innerHTML='<span style="color:var(--rtxt)">❌ 최소 공급사, 국가, 금액은 입력해주세요</span>';return;}
-
-  const name=parts[0];
-  const country=parts[1]||'기타 유럽';
-  const amountLocal=parseFloat(parts[2].replace(/[^0-9.]/g,''))||0;
-  const currency=(parts[3]||'EUR').toUpperCase();
-  const shipping=parts[4]||'';
-  // 상태 매핑
-  const statusMap={
-    '대기중':'pending','대기':'pending',
-    '주문준비완료':'preparing','준비완료':'preparing','준비':'preparing',
-    '결제대기':'payment','결제':'payment',
-    '배송중':'shipping','배송':'shipping',
-    '입고완료':'arrived','완료':'arrived','입고':'arrived',
-    '취소':'cancelled'
-  };
-  const statusRaw=(parts[5]||'대기중').toLowerCase().replace(/\s/g,'');
-  const status=Object.entries(statusMap).find(([k])=>statusRaw.includes(k.replace(/\s/g,'')))?.[1]||'pending';
-  const amountKrw=Math.round(amountLocal*getR(currency));
-
-  await fbSave('orders','o'+Date.now(),{
-    id:'o'+Date.now(),name,country,
-    amountLocal,amountEur:currency==='EUR'?amountLocal:0,
-    currency,amountKrw,
-    qty:0,date:today(),eta:'-',
-    shipping,shipCost:0,status,memo:'빠른입력'
-  });
-
-  res.innerHTML=`<span style="color:var(--gtxt)">✓ ${name} (${country}) ${amountLocal.toLocaleString()}${currency} 발주 등록 완료!</span>`;
-  document.getElementById('quickOrderInput').value='';
-  setTimeout(()=>{res.innerHTML='';},3000);
-};
-
 /* ── CONTACTS ── */
 const CONTACT_STATUS={
   active:   {label:'진행중', cls:'b-ok'},
@@ -2568,7 +2865,7 @@ window.deleteStockLog=async function(logId,productId,variantId,qty,type){
   renderStockLogs();renderDash();renderInventory();
   deleteDoc(doc(db,'stockLogs',logId));
 };
-let notes=[];
+
 /* ── 판매 뷰 탭 ── */
 let currentSalesView='monthly';
 window.switchSalesView=function(view,btn){
@@ -2673,31 +2970,130 @@ function renderPopularProducts(){
   renderRank('popularByProfit',[...all].sort((a,b)=>b.profit-a.profit),'profit',won);
   renderRank('popularByMargin',[...all].filter(v=>v.sales>0).sort((a,b)=>b.margin-a.margin),'margin',v=>v+'%');
 }
-window.updateSaleVariants=function(){
-  const pid=document.getElementById('seProduct').value;
-  const p=products.find(x=>x.id===pid);const vs=p?getProductVariants(p):[];
-  document.getElementById('seVariant').innerHTML=vs.map(v=>`<option value="${v.id}">${v.name} (재고 ${v.qty}개, ${won(v.priceKrw)})</option>`).join('');
-  if(vs.length)document.getElementById('sePrice').value=vs[0].priceKrw||'';
+/* ── 일 실적 입력 ── */
+let currentDailyChan='스마트스토어';
+const CHAN_COLORS={'스마트스토어':'#10b981','쿠팡':'#f59e0b','오픈마켓':'#3b82f6'};
+
+window.selectDailyChan=function(chan){
+  currentDailyChan=chan;
+  document.querySelectorAll('.d-chan-btn').forEach(b=>{
+    const isSel=b.id===`dChanBtn-${chan}`;
+    b.style.background=isSel?(CHAN_COLORS[chan]||'var(--accent-dark)'):'transparent';
+    b.style.color=isSel?'#fff':'var(--text2)';
+    b.style.border=isSel?'none':'2px solid var(--border2)';
+  });
+  // 쿠팡/오픈마켓은 추가비용 란 표시
+  const extra=document.getElementById('dExtraCosts');
+  if(extra)extra.style.display=(chan==='쿠팡'||chan==='오픈마켓')?'block':'none';
+  renderDailySaleItems();
 };
-window.saveSaleEntry=async function(){
-  const productId=document.getElementById('seProduct').value;
-  const variantId=document.getElementById('seVariant').value;
-  const qty=parseInt(document.getElementById('seQty').value)||0;
-  if(!qty||qty<=0)return alert('수량을 입력해주세요');
-  const channel=document.getElementById('seChannel').value;
-  const date=document.getElementById('seDate').value||today();
-  const memo=document.getElementById('seMemo').value;
-  const salePrice=parseFloat(document.getElementById('sePrice').value)||0;
-  const p=products.find(x=>x.id===productId);if(!p)return;
-  const vs=JSON.parse(JSON.stringify(getProductVariants(p)));
-  const vi=vs.findIndex(x=>x.id===variantId);if(vi===-1)return;
-  if(vs[vi].qty<qty&&!confirm(`현재 재고(${vs[vi].qty}개)보다 많습니다. 계속할까요?`))return;
-  vs[vi].qty=Math.max(0,vs[vi].qty-qty);
-  await fbSave('products',productId,{...p,variants:vs,qty:vs.reduce((s,v)=>s+v.qty,0)});
-  const logData={productId,variantId,type:'out',qty,date,channel,memo:memo||(channel+' 판매')};
-  if(salePrice>0)logData.salePrice=salePrice;
-  await fbSave('stockLogs','sl'+Date.now(),logData);
-  closeModal('saleEntryModal');renderSalesView();
+
+function renderDailySaleItems(){
+  const wrap=document.getElementById('dSaleItems');if(!wrap)return;
+  if(!products.length){wrap.innerHTML='<div style="color:var(--text3);font-size:13px">제품이 없습니다</div>';return;}
+
+  wrap.innerHTML=products.map(p=>{
+    const vs=getProductVariants(p);
+    const chanColor=CHAN_COLORS[currentDailyChan]||'var(--accent-dark)';
+    return`<div style="background:var(--bg2);border-radius:var(--rsm);padding:12px 14px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--text)">${p.name}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">
+        ${vs.map(v=>`
+          <div>
+            <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">${v.name} <span style="color:var(--text3)">(재고 ${v.qty})</span></label>
+            <input type="number" min="0" value="0"
+              id="dqty-${p.id}-${v.id}"
+              oninput="updateDailyPreview()"
+              data-pid="${p.id}" data-vid="${v.id}" data-price="${v.priceKrw||0}"
+              style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;text-align:center;font-family:inherit;border-color:${chanColor}20"
+              onfocus="this.style.borderColor='${chanColor}'" onblur="this.style.borderColor='${chanColor}20'">
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  updateDailyPreview();
+}
+
+window.updateDailyPreview=function(){
+  const inputs=document.querySelectorAll('#dSaleItems input[type=number]');
+  let totalQty=0,totalSales=0;
+  inputs.forEach(inp=>{
+    const q=parseInt(inp.value)||0;
+    const price=parseInt(inp.dataset.price)||0;
+    totalQty+=q;totalSales+=q*price;
+  });
+  const preview=document.getElementById('dSalePreview');
+  const qEl=document.getElementById('dTotalQty');
+  const sEl=document.getElementById('dTotalSales');
+  if(preview)preview.style.display=totalQty>0?'block':'none';
+  if(qEl)qEl.textContent=totalQty+'개';
+  if(sEl)sEl.textContent=won(totalSales);
+};
+
+window.saveDailySales=async function(){
+  const date=document.getElementById('dSaleDate').value||today();
+  const channel=currentDailyChan;
+  const inputs=document.querySelectorAll('#dSaleItems input[type=number]');
+  const entries=[];
+  inputs.forEach(inp=>{
+    const q=parseInt(inp.value)||0;
+    if(q<=0)return;
+    const pid=inp.dataset.pid;
+    const vid=inp.dataset.vid;
+    const p=products.find(x=>x.id===pid);
+    const vs=p?getProductVariants(p):[];
+    const v=vs.find(x=>x.id===vid)||vs[0];
+    const price=v?.priceKrw||0;
+    entries.push({productId:pid,variantId:vid,qty:q,price});
+  });
+  if(!entries.length)return alert('판매 수량을 1개 이상 입력해주세요');
+
+  // 재고 차감
+  const productUpdates={};
+  entries.forEach(e=>{
+    const p=products.find(x=>x.id===e.productId);if(!p)return;
+    if(!productUpdates[p.id])productUpdates[p.id]={p,vs:JSON.parse(JSON.stringify(getProductVariants(p)))};
+    const vs=productUpdates[p.id].vs;
+    const vi=vs.findIndex(x=>x.id===e.variantId);
+    if(vi!==-1)vs[vi].qty=Math.max(0,vs[vi].qty-e.qty);
+  });
+
+  // 로컬 즉시 반영
+  Object.values(productUpdates).forEach(({p,vs})=>{
+    const idx=products.findIndex(x=>x.id===p.id);
+    if(idx>=0)products[idx]={...p,variants:vs,qty:vs.reduce((s,v)=>s+v.qty,0)};
+  });
+
+  const logistics=parseInt(document.getElementById('dLogisticsCost')?.value)||0;
+  const coupon=parseInt(document.getElementById('dCouponCost')?.value)||0;
+  const adCostVal=parseInt(document.getElementById('dAdCost')?.value)||0;
+
+  closeModal('saleEntryModal');
+  renderAll();renderSalesView();
+
+  // Firebase 저장
+  const saves=[];
+  entries.forEach(e=>{
+    const logId='sl'+Date.now()+Math.random().toString(36).slice(2,6);
+    const logData={id:logId,productId:e.productId,variantId:e.variantId,
+      type:'out',qty:e.qty,date,channel,
+      memo:`${channel} 판매`
+    };
+    if(e.price>0)logData.salePrice=e.price;
+    if(logistics>0)logData.logistics=logistics;
+    if(coupon>0)logData.coupon=coupon;
+    if(adCostVal>0)logData.adCost=adCostVal;
+    stockLogs.push(logData);
+    saves.push(setDoc(doc(db,'stockLogs',logId),logData));
+  });
+  Object.values(productUpdates).forEach(({p,vs})=>{
+    saves.push(setDoc(doc(db,'products',p.id),{...p,variants:vs,qty:vs.reduce((s,v)=>s+v.qty,0)}));
+  });
+  await Promise.all(saves);
+  setSyncState('ok');
+  stockLogs.sort((a,b)=>a.date.localeCompare(b.date));
+  renderStockLogs();renderSalesView();
 };
 
 let currentNoteId=null;
@@ -2939,7 +3335,65 @@ window.importExcel=async function(event){
   reader.readAsText(file,'utf-8');
 };
 
-/* ── 출고 내역 전체 삭제 ── */
+/* ── 광고 효율 ── */
+let adCostsData={};
+
+function renderAdPerformance(monthKey,totalSales,chanData){
+  const el=document.getElementById('adPerformance');if(!el)return;
+  const ad=adCostsData[monthKey]||{};
+  const adN=ad.naver||0,adC=ad.coupang||0,adE=ad.etc||0;
+  const totalAd=adN+adC+adE;
+  if(!totalAd){el.innerHTML='<div class="empty" style="font-size:13px">광고비를 입력하면 ROAS와 광고 효율이 계산돼요</div>';return;}
+  const roas=totalAd>0?(totalSales/totalAd).toFixed(2):'-';
+  const roasN=adN>0?((chanData['스마트스토어']?.sales||0)/adN).toFixed(2):'-';
+  const roasC=adC>0?((chanData['쿠팡']?.sales||0)/adC).toFixed(2):'-';
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:1rem">
+      <div style="background:var(--bg2);border-radius:var(--rsm);padding:12px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">전체 ROAS</div>
+        <div style="font-size:24px;font-weight:700;color:var(--accent-dark)">${roas}x</div>
+        <div style="font-size:11px;color:var(--text3)">총 광고비 ${won(totalAd)}</div>
+      </div>
+      ${adN?`<div style="background:var(--bg2);border-radius:var(--rsm);padding:12px;border-top:2px solid #10b981">
+        <div style="font-size:11px;color:#10b981;margin-bottom:4px">스마트스토어 ROAS</div>
+        <div style="font-size:22px;font-weight:700">${roasN}x</div>
+        <div style="font-size:11px;color:var(--text3)">${won(adN)}</div>
+      </div>`:''}
+      ${adC?`<div style="background:var(--bg2);border-radius:var(--rsm);padding:12px;border-top:2px solid #f59e0b">
+        <div style="font-size:11px;color:#f59e0b;margin-bottom:4px">쿠팡 ROAS</div>
+        <div style="font-size:22px;font-weight:700">${roasC}x</div>
+        <div style="font-size:11px;color:var(--text3)">${won(adC)}</div>
+      </div>`:''}
+    </div>
+  `;
+}
+
+window.saveAdCosts=function(){
+  const val=document.getElementById('salesMonth')?.value;if(!val)return;
+  const data={
+    naver:parseFloat(document.getElementById('adCostNaver').value)||0,
+    coupang:parseFloat(document.getElementById('adCostCoupang').value)||0,
+    etc:parseFloat(document.getElementById('adCostEtc').value)||0
+  };
+  adCostsData[val]=data;
+  localStorage.setItem('hd4-adcosts',JSON.stringify(adCostsData));
+  closeModal('adModal');
+  renderSales();
+};
+
+window.openModal=function(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='adModal'){
+    const val=document.getElementById('salesMonth')?.value||'';
+    const mn=val?val.replace('-','년 ')+'월':'';
+    const el=document.getElementById('adModalMonth');
+    if(el)el.textContent=mn+' 광고비';
+    const ad=adCostsData[val]||{};
+    document.getElementById('adCostNaver').value=ad.naver||'';
+    document.getElementById('adCostCoupang').value=ad.coupang||'';
+    document.getElementById('adCostEtc').value=ad.etc||'';
+  }
+};
 window.clearAllOutLogs=async function(){
   const outLogs=stockLogs.filter(l=>l.type.startsWith('out'));
   if(!outLogs.length)return alert('삭제할 출고 내역이 없습니다');
@@ -2971,6 +3425,36 @@ window.clearAllOutLogs=async function(){
     ...outLogs.map(l=>deleteDoc(doc(db,'stockLogs',l.id)))
   ]).then(()=>setSyncState('ok')).catch(e=>console.error(e));
 };
+/* ── 브랜드 자동 설정 ── */
+window.autoFixBrands=async function(){
+  const brandMap={
+    'sorekara':'Sorekara','소레카라':'Sorekara',
+    'clinq':'CLINQ',
+    'lorenzi':'Lorenzi',
+    'impregna':'Impregna',
+  };
+  const unbranded=products.filter(p=>!p.brand||!p.brand.trim());
+  if(!unbranded.length){alert('✓ 모든 제품에 브랜드가 설정되어 있어요!');return;}
+
+  const updates=[];
+  unbranded.forEach(p=>{
+    const nameLower=p.name.toLowerCase();
+    let brand='';
+    for(const [key,val] of Object.entries(brandMap)){
+      if(nameLower.includes(key)){brand=val;break;}
+    }
+    if(!brand)brand=p.name.split(' ')[0]; // 매핑 안 되면 첫 단어
+    const updated={...p,brand};
+    const idx=products.findIndex(x=>x.id===p.id);
+    if(idx>=0)products[idx]=updated;
+    updates.push(setDoc(doc(db,'products',p.id),updated));
+  });
+
+  renderAll();
+  await Promise.all(updates);
+  setSyncState('ok');
+};
+
 window.downloadExcelTemplate=function(){
   const headers=['브랜드','제품명','옵션명','수량','원가','통화','판매가','소싱국가','카테고리','안전재고'];
   const sample=[
@@ -2997,6 +3481,7 @@ window.downloadExcelTemplate=function(){
 /* ── INIT ── */
 document.getElementById('orDate').value=today();
 document.body.classList.add('viewer-mode');
+try{adCostsData=JSON.parse(localStorage.getItem('hd4-adcosts')||'{}');}catch{adCostsData={};}
 startListeners();
 fetchRates();
 setInterval(()=>fetchRates(),60*60*1000);
