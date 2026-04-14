@@ -232,8 +232,8 @@ input[type="file"]{display:none;}
 .notice-reg-btn:hover{background:#fff7f4;}
 
 /* NOTICE MODAL */
-.notice-modal{width:520px;}
-.notice-check-list{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto;}
+.notice-modal{width:520px;max-height:85vh;overflow-y:auto;}
+.notice-check-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;}
 .notice-check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;cursor:pointer;}
 .notice-check-item:hover{background:#f1f5f9;}
 .notice-check-item.checked{background:#FAEEDA;border-color:#FAC775;}
@@ -1056,10 +1056,37 @@ input[type="file"]{display:none;}
 <div class="modal-overlay" id="notice-modal">
   <div class="modal notice-modal">
     <div class="modal-title">공지 등록</div>
-    <div style="font-size:13px;color:#64748b;margin-bottom:8px;">공지로 띄울 항목을 선택하세요. 체크된 항목이 상단 배너에 표시됩니다.</div>
-    <div class="notice-check-list" id="notice-check-list"></div>
+
+    <!-- Step 1: 브랜드 선택 -->
+    <div id="notice-step-brand">
+      <div style="font-size:12px;color:#64748b;margin-bottom:8px;">브랜드를 선택하면 해당 브랜드의 미완료 항목이 표시됩니다.</div>
+      <div id="notice-brand-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- Step 3: 직접 작성 -->
+    <div id="notice-step-manual" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <button onclick="noticeBackToBrands()" style="font-size:12px;padding:4px 10px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;cursor:pointer;">← 뒤로</button>
+        <span style="font-size:13px;font-weight:600;color:#64748b;">✏️ 직접 작성</span>
+      </div>
+      <div id="notice-manual-items" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;margin-bottom:8px;"></div>
+      <button onclick="noticeAddManualItem()" style="width:100%;font-size:12px;padding:10px;border:1.5px dashed #ffb89a;border-radius:8px;background:#fff7f4;color:#FF671D;cursor:pointer;font-weight:600;">+ 항목 추가</button>
+    </div>
+    <div id="notice-step-items" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <button onclick="noticeBackToBrands()" style="font-size:12px;padding:4px 10px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;cursor:pointer;">← 뒤로</button>
+        <span id="notice-selected-brand-name" style="font-size:13px;font-weight:600;color:#FF671D;"></span>
+      </div>
+      <div class="notice-check-list" id="notice-check-list"></div>
+    </div>
+
+    <!-- 선택된 항목 요약 -->
+    <div id="notice-selected-summary" style="display:none;margin-top:8px;padding:8px 10px;background:#fff7f4;border:1px solid #ffb89a;border-radius:8px;font-size:12px;color:#64748b;">
+      선택됨: <span id="notice-selected-count" style="font-weight:700;color:#FF671D;">0</span>개 항목
+    </div>
+
     <div class="f" style="margin-top:8px;">
-      <label style="font-size:12px;font-weight:500;color:#475569;">공지 제목 (선택)</label>
+      <label style="font-size:12px;font-weight:500;color:#475569;">공지 제목</label>
       <input type="text" id="notice-title-input" placeholder="예: 확인해야 될 결제 건이 있습니다"/>
     </div>
     <div class="modal-btns">
@@ -1238,6 +1265,7 @@ function startRealtimeSync(){
   if(_firestoreListener) return;
   _firestoreListener = DOC_REF.onSnapshot(snap=>{
     if(!snap.exists) return;
+    if(_isSaving) return; // 저장 중엔 덮어쓰기 방지
     const data=snap.data();
     if(!data) return;
     try{
@@ -1286,8 +1314,11 @@ function startRealtimeSync(){
 }
 
 // ── STORAGE ────────────────────────────────────────────
+let _isSaving = false;
+
 function save(){
   // Firebase에만 저장 (localStorage 완전 제거 — 용량 초과 방지)
+  _isSaving = true;
   const full=brands.map(b=>({...b}));
   DOC_REF.set({
     brands: JSON.stringify(full),
@@ -1295,7 +1326,9 @@ function save(){
     updatedAt: new Date().toISOString()
   }).then(()=>{
     setDebug('저장 완료 (동기화됨) — '+new Date().toLocaleTimeString('ko-KR'));
+    setTimeout(()=>{ _isSaving=false; }, 2000);
   }).catch(e=>{
+    _isSaving=false;
     setDebug('Firebase 저장 실패: '+e.message,false);
   });
 }
@@ -2198,24 +2231,22 @@ function handleImport(e){
 
 // ── NOTICES ────────────────────────────────────────────
 function defaultNotices(){
-  return [{
-    id:uid(),
-    title:'확인해야 될 결제 건이 있습니다',
-    items:[
-      {brandId:'',brandName:'Sorekara',label:'대금 납부 필요',sub:'인보이스 발행 후 결제 예정'},
-      {brandId:'',brandName:'Lorenzi',label:'프랑스 DHL 원격픽업 결제건',sub:'원격픽업 결제 처리 필요'},
-      {brandId:'',brandName:'Sorekara',label:'독점계약서 서명 필요',sub:'전자서명 또는 자필서명 후 스캔'}
-    ],
-    createdAt:new Date().toISOString(),
-    dismissed:false
-  }];
+  return [];
 }
+
+let _noticesExpanded = false;
 
 function renderNotices(){
   const el=document.getElementById('notice-section');
   const active=notices.filter(n=>!n.dismissed);
   if(!active.length){el.innerHTML='';return;}
-  el.innerHTML=active.map(n=>`
+
+  const SHOW=2;
+  const visible=_noticesExpanded?active:active.slice(0,SHOW);
+  const hidden=active.length-SHOW;
+
+  el.innerHTML=`
+    ${visible.map(n=>`
     <div class="notice-banner" style="margin-bottom:8px;">
       <div class="notice-icon"><div class="notice-dot-red"></div></div>
       <div class="notice-body">
@@ -2231,7 +2262,14 @@ function renderNotices(){
         <button class="notice-close" onclick="dismissNotice('${n.id}')">닫기</button>
       </div>
     </div>
-  `).join('');
+    `).join('')}
+    ${active.length>SHOW?`
+    <div style="text-align:center;margin-bottom:8px;">
+      <button onclick="_noticesExpanded=!_noticesExpanded;renderNotices()" style="font-size:12px;padding:6px 18px;border:1px solid #e2e8f0;border-radius:20px;background:#fff;color:#64748b;cursor:pointer;font-weight:500;">
+        ${_noticesExpanded?'▲ 접기':'숨겨진 공지 더 보기 ›'}
+      </button>
+    </div>`:''}
+  `;
 }
 
 function dismissNotice(id){
@@ -2292,46 +2330,151 @@ function restoreNotice(id){
   if(n){n.dismissed=false;save();renderNotices();renderNoticeManageList();}
 }
 
+// 브랜드별 항목 캐시
+let _noticeAllItems = [];
+
 function openNoticeModal(){
   noticeCheckSelections=[];
-  const list=document.getElementById('notice-check-list');
-  list.innerHTML='';
-  // Gather all pending items from all brands
-  const items=[];
+  _noticeAllItems=[];
+
+  // 전체 항목 수집
   brands.forEach(b=>{
     (b.pendingReasons||[]).filter(r=>!r.resolved).forEach(r=>{
-      items.push({brandId:b.id,brandName:b.name,label:r.label,sub:r.sub,key:b.id+'_pr_'+r.id});
+      _noticeAllItems.push({brandId:b.id,brandName:b.name,label:r.label,sub:r.sub,key:b.id+'_pr_'+r.id});
     });
     (b.payments||[]).filter(p=>p.status!=='paid').forEach(p=>{
-      items.push({brandId:b.id,brandName:b.name,label:p.label+(p.amount?' ('+p.amount+')':''),sub:p.note||'미결제',key:b.id+'_pay_'+p.id});
+      _noticeAllItems.push({brandId:b.id,brandName:b.name,label:p.label+(p.amount?' ('+p.amount+')':''),sub:p.note||'미결제',key:b.id+'_pay_'+p.id});
     });
     (b.taxItems||[]).filter(t=>t.status!=='done').forEach(t=>{
-      items.push({brandId:b.id,brandName:b.name,label:'납세: '+t.label,sub:t.note||'',key:b.id+'_tax_'+t.id});
+      _noticeAllItems.push({brandId:b.id,brandName:b.name,label:'납세: '+t.label,sub:t.note||'',key:b.id+'_tax_'+t.id});
     });
     (b.shipItems||[]).filter(s=>s.status!=='done').forEach(s=>{
-      items.push({brandId:b.id,brandName:b.name,label:'배송: '+(s.label||''),sub:s.note||'',key:b.id+'_ship_'+s.id});
+      _noticeAllItems.push({brandId:b.id,brandName:b.name,label:'배송: '+(s.label||''),sub:s.note||'',key:b.id+'_ship_'+s.id});
     });
   });
-  if(!items.length){
-    list.innerHTML='<div style="font-size:13px;color:#94a3b8;padding:12px;text-align:center;">공지로 등록할 수 있는 미완료 항목이 없습니다.</div>';
-  } else {
-    items.forEach(it=>{
-      const div=document.createElement('div');
-      div.className='notice-check-item';
-      div.dataset.key=it.key;
-      div.innerHTML=`
-        <div class="nci-check" id="nci_${it.key}"></div>
-        <div class="nci-body">
-          <div class="nci-brand">${it.brandName}</div>
-          <div class="nci-label">${it.label}</div>
-          ${it.sub?`<div class="nci-sub">${it.sub}</div>`:''}
-        </div>`;
-      div.onclick=()=>toggleNoticeCheck(it);
-      list.appendChild(div);
-    });
-  }
+
+  // Step 1: 브랜드 목록 표시
+  document.getElementById('notice-step-brand').style.display='block';
+  document.getElementById('notice-step-items').style.display='none';
+  document.getElementById('notice-selected-summary').style.display='none';
   document.getElementById('notice-title-input').value='확인해야 될 사항이 있습니다';
+
+  const brandIds=[...new Set(_noticeAllItems.map(i=>i.brandId))];
+  const brandList=document.getElementById('notice-brand-list');
+
+  if(!brandIds.length){
+    brandList.innerHTML='<div style="font-size:13px;color:#94a3b8;padding:16px;text-align:center;">미완료 항목이 있는 브랜드가 없습니다.</div>';
+  } else {
+    brandList.innerHTML=brandIds.map(bid=>{
+      const b=brands.find(b=>b.id===bid);
+      const cnt=_noticeAllItems.filter(i=>i.brandId===bid).length;
+      return `<div onclick="noticSelectBrand('${bid}')" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1px solid #e2e8f0;border-radius:9px;cursor:pointer;background:#fff;transition:border-color .15s;" onmouseover="this.style.borderColor='#FF671D'" onmouseout="this.style.borderColor='#e2e8f0'">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">${b?.logoUrl||'📦'}</span>
+          <span style="font-size:13px;font-weight:600;color:#1a1a1a;">${b?.name||bid}</span>
+        </div>
+        <span style="font-size:11px;font-weight:600;padding:3px 10px;background:#fff7f4;color:#FF671D;border:1px solid #ffb89a;border-radius:12px;">${cnt}개 항목</span>
+      </div>`;
+    }).join('')+`
+    <div onclick="noticeManualWrite()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:1.5px dashed #e2e8f0;border-radius:9px;cursor:pointer;background:#f8fafc;margin-top:4px;" onmouseover="this.style.borderColor='#FF671D';this.style.background='#fff7f4'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'">
+      <span style="font-size:20px;">✏️</span>
+      <span style="font-size:13px;font-weight:600;color:#64748b;">직접 작성</span>
+    </div>`;
+  }
   document.getElementById('notice-modal').classList.add('open');
+}
+
+function noticSelectBrand(brandId){
+  const b=brands.find(b=>b.id===brandId);
+  document.getElementById('notice-selected-brand-name').textContent=b?.name||brandId;
+  document.getElementById('notice-step-brand').style.display='none';
+  document.getElementById('notice-step-items').style.display='block';
+
+  const items=_noticeAllItems.filter(i=>i.brandId===brandId);
+  const list=document.getElementById('notice-check-list');
+  list.innerHTML='';
+  items.forEach(it=>{
+    const div=document.createElement('div');
+    div.className='notice-check-item';
+    div.dataset.key=it.key;
+    div.innerHTML=`
+      <div class="nci-check" id="nci_${it.key}"></div>
+      <div class="nci-body">
+        <div class="nci-label">${it.label}</div>
+        ${it.sub?`<div class="nci-sub">${it.sub}</div>`:''}
+      </div>`;
+    div.onclick=()=>toggleNoticeCheck(it);
+    // 이미 선택된 항목 복원
+    if(noticeCheckSelections.find(s=>s.key===it.key)){
+      div.classList.add('checked');
+      div.querySelector('.nci-check').classList.add('on');
+    }
+    list.appendChild(div);
+  });
+}
+
+function noticeManualWrite(){
+  document.getElementById('notice-step-brand').style.display='none';
+  document.getElementById('notice-step-items').style.display='none';
+  document.getElementById('notice-step-manual').style.display='block';
+  renderManualItems();
+}
+
+let _manualItems=[]; // [{id, label, sub, checked}]
+
+function renderManualItems(){
+  const container=document.getElementById('notice-manual-items');
+  if(!_manualItems.length){
+    container.innerHTML=`<div style="font-size:12px;color:#94a3b8;padding:8px;text-align:center;">아래 버튼으로 항목을 추가하세요</div>`;
+    return;
+  }
+  container.innerHTML=_manualItems.map((it,i)=>`
+    <div class="notice-check-item${it.checked?' checked':''}" onclick="toggleManualItem(${i})" style="align-items:flex-start;gap:10px;">
+      <div class="nci-check${it.checked?' on':''}" style="margin-top:3px;flex-shrink:0;"></div>
+      <div style="flex:1;" onclick="event.stopPropagation()">
+        <input value="${escVal(it.label)}" placeholder="항목 내용" style="width:100%;font-size:12px;font-weight:500;margin-bottom:4px;"
+          oninput="_manualItems[${i}].label=this.value;if(this.value)_manualItems[${i}].checked=true;updateNoticeSelectedSummary();renderManualItems()" onclick="event.stopPropagation()"/>
+        <input value="${escVal(it.sub||'')}" placeholder="부가 설명 (선택)" style="width:100%;font-size:11px;color:#64748b;"
+          oninput="_manualItems[${i}].sub=this.value" onclick="event.stopPropagation()"/>
+      </div>
+      <button onclick="event.stopPropagation();_manualItems.splice(${i},1);renderManualItems();updateNoticeSelectedSummary()" style="font-size:13px;background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;flex-shrink:0;">✕</button>
+    </div>
+  `).join('');
+}
+
+function toggleManualItem(i){
+  if(!_manualItems[i].label){return;}
+  _manualItems[i].checked=!_manualItems[i].checked;
+  updateNoticeSelectedSummary();
+  renderManualItems();
+}
+
+function noticeAddManualItem(){
+  _manualItems.push({id:uid(),label:'',sub:'',checked:false});
+  renderManualItems();
+  // 새 항목의 입력란에 포커스
+  setTimeout(()=>{
+    const inputs=document.querySelectorAll('#notice-manual-items input[placeholder="항목 내용"]');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  },50);
+}
+
+function noticeBackToBrands(){
+  document.getElementById('notice-step-brand').style.display='block';
+  document.getElementById('notice-step-items').style.display='none';
+  document.getElementById('notice-step-manual').style.display='none';
+  updateNoticeSelectedSummary();
+}
+
+function updateNoticeSelectedSummary(){
+  const manualCnt=_manualItems.filter(it=>it.checked&&it.label.trim()).length;
+  const cnt=noticeCheckSelections.length+manualCnt;
+  const el=document.getElementById('notice-selected-summary');
+  if(el){
+    el.style.display=cnt>0?'block':'none';
+    const c=document.getElementById('notice-selected-count');
+    if(c) c.textContent=cnt;
+  }
 }
 
 function toggleNoticeCheck(it){
@@ -2347,14 +2490,20 @@ function toggleNoticeCheck(it){
     if(el)el.classList.add('on');
     if(row)row.classList.add('checked');
   }
+  updateNoticeSelectedSummary();
 }
 
 function closeNoticeModal(){
   document.getElementById('notice-modal').classList.remove('open');
   noticeCheckSelections=[];
+  _manualItems=[];
 }
 
 function saveNotice(){
+  // 수동 작성 체크된 항목 수집
+  _manualItems.filter(it=>it.checked&&it.label.trim()).forEach(it=>{
+    noticeCheckSelections.push({brandId:'',brandName:'',label:it.label.trim(),sub:it.sub||'',key:'manual_'+it.id});
+  });
   if(!noticeCheckSelections.length){alert('항목을 하나 이상 선택하세요.');return;}
   const title=document.getElementById('notice-title-input').value||'확인 필요 사항이 있습니다';
   notices.unshift({
