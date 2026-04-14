@@ -3067,12 +3067,15 @@ function renderVendorEditForm(v){
       <div class="f" style="margin:0;"><label>주소</label><input id="vm-address" value="${escVal(v?.address||'')}" placeholder="국가, 도시, 주소"/></div>
       <div class="f" style="margin:0;"><label>메모</label><textarea id="vm-memo" rows="3" style="width:100%;padding:8px;border:1px solid #dde3ea;border-radius:8px;font-size:13px;resize:vertical;">${escVal(v?.memo||'')}</textarea></div>
       ${v?`
-      <div>
-        <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;">브랜드 연결</div>
-        <div style="display:flex;flex-direction:column;gap:4px;max-height:150px;overflow-y:auto;">
-          ${brands.map(b=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;padding:4px 0;">
-            <input type="checkbox" ${b.vendorId===v.id?'checked':''} onchange="toggleBrandVendor('${b.id}','${v.id}',this.checked)" style="width:14px;height:14px;"/>
-            <span>${escVal(b.logoUrl||'📦')} ${escVal(b.name)}</span>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;">
+        <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:2px;">브랜드 연결</div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:8px;">체크하면 즉시 저장됩니다</div>
+        <div style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;">
+          ${brands.map(b=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;padding:5px 8px;border-radius:6px;background:${b.vendorId===v.id?'#fff7f4':'#fff'};border:1px solid ${b.vendorId===v.id?'#ffb89a':'#e2e8f0'};">
+            <input type="checkbox" ${b.vendorId===v.id?'checked':''} onchange="toggleBrandVendor('${b.id}','${v.id}',this.checked)" style="width:15px;height:15px;accent-color:#FF671D;"/>
+            <span style="font-size:14px;">${escVal(b.logoUrl||'📦')}</span>
+            <span style="font-weight:${b.vendorId===v.id?'600':'400'};color:${b.vendorId===v.id?'#FF671D':'#1a1a1a'};">${escVal(b.name)}</span>
+            ${b.vendorId===v.id?'<span style="font-size:10px;color:#FF671D;margin-left:auto;">연결됨</span>':''}
           </label>`).join('')}
         </div>
       </div>`:''}
@@ -3110,7 +3113,16 @@ function toggleBrandVendor(brandId, vendorId, link){
   const b=brands.find(b=>b.id===brandId);
   if(!b) return;
   b.vendorId = link ? vendorId : null;
-  save();
+  // 즉시 Firebase 저장 (디바운스 없이)
+  const full=brands.map(b=>({...b}));
+  DOC_REF.set({
+    brands: JSON.stringify(full),
+    notices: JSON.stringify(notices),
+    updatedAt: new Date().toISOString()
+  }).then(()=>{
+    setDebug('브랜드 연결 저장됨');
+    renderVendors();
+  }).catch(e=>setDebug('저장 실패: '+e.message,false));
 }
 
 function deleteVendor(id){
