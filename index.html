@@ -303,7 +303,7 @@ tbody tr:hover td{background:var(--bg2)}
 .sync-dot.error{background:#ef4444;animation:none}
 
 /* VIEWER MODE */
-body.viewer-mode .edit-only{display:none!important}
+.edit-only{} /* always visible */
 body.viewer-mode .sb-footer.master-only{display:none}
 .viewer-only{display:none}
 body.viewer-mode .viewer-only{display:inline-flex}
@@ -375,23 +375,9 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <span style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px">
         <span class="sync-dot" id="syncDot"></span><span id="syncLabel">연결 중...</span>
       </span>
-      <!-- 관리자 -->
-      <div id="adminLockBtn">
-        <button class="btn btn-sm" style="color:var(--accent-dark);border-color:var(--accent);font-size:12px" onclick="requestAdminUnlock()">🔐 관리자</button>
-      </div>
-      <div id="adminUnlockBtn" style="display:none;gap:6px">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('pwModal'))" style="font-size:11px">비번</button>
-        <button class="btn btn-sm" style="color:var(--rtxt);font-size:12px" onclick="lockAdmin()">🔓 잠금</button>
-      </div>
-    </div>
-  </div>
-  <!-- 관리자 배너 -->
-  <div id="adminBanner" style="display:none;background:var(--gbg);color:var(--gtxt);font-size:12px;padding:5px 2rem;align-items:center;justify-content:space-between;border-top:1px solid rgba(6,95,70,0.2)">
-    <span>👑 관리자 모드 — 데이터 수정 가능</span>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="btn btn-sm edit-only" onclick="exportData()" style="font-size:11px">JSON 내보내기</button>
-      <label class="btn btn-sm edit-only" style="font-size:11px;cursor:pointer">JSON 불러오기<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
-      <button onclick="lockAdmin()" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--gtxt);font-family:inherit;font-weight:600">잠금</button>
+      <!-- JSON 백업 -->
+      <button class="btn btn-sm" onclick="exportData()" style="font-size:11px">JSON 내보내기</button>
+      <label class="btn btn-sm" style="font-size:11px;cursor:pointer">JSON 불러오기<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
     </div>
   </div>
 </header>
@@ -479,11 +465,11 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <label class="btn edit-only" style="cursor:pointer" title="엑셀 파일로 일괄 등록">
           📥 엑셀 업로드
-          <input type="file" accept=".csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
+          <input type="file" accept=".csv" onchange="(()=>importExcel(event))" style="display:none">
         </label>
-        <button class="btn edit-only" onclick="requestAdminUnlock(autoFixBrands)" style="color:var(--atxt);border-color:var(--atxt)">🏷 브랜드 자동설정</button>
-        <button class="btn edit-only" onclick="requestAdminUnlock(openProductModal)">+ 제품 등록</button>
-        <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(openStockModal)">입 / 출고 처리</button>
+        <button class="btn edit-only" onclick="autoFixBrands()" style="color:var(--atxt);border-color:var(--atxt)">🏷 브랜드 자동설정</button>
+        <button class="btn edit-only" onclick="openProductModal()">+ 제품 등록</button>
+        <button class="btn btn-primary edit-only" onclick="openStockModal()">입 / 출고 처리</button>
       </div>
     </div>
     <!-- 브랜드 탭 -->
@@ -512,7 +498,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <label class="btn btn-primary" style="cursor:pointer">
           파일 선택 및 업로드
-          <input type="file" accept=".csv" onchange="requestAdminUnlock(()=>importExcel(event))" style="display:none">
+          <input type="file" accept=".csv" onchange="(()=>importExcel(event))" style="display:none">
         </label>
         <button class="btn" onclick="downloadExcelTemplate()">📄 템플릿 다운로드</button>
         <span id="excelUploadStatus" style="font-size:12px;color:var(--text3)"></span>
@@ -611,7 +597,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-orders" class="page">
     <div class="page-header">
       <div><div class="page-title">발주 관리</div><div class="page-desc">해외 발주 및 입고 예정</div></div>
-      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>openOrderModal())">+ 발주 등록</button>
+      <button class="btn btn-primary edit-only" onclick="(()=>openOrderModal())">+ 발주 등록</button>
     </div>
     <div class="card tbl-wrap"><table>
       <thead><tr><th>발주일</th><th>공급사</th><th>국가</th><th>주문금액</th><th>통화</th><th>원화환산</th><th>배송방식</th><th>예상입고</th><th>진행상태</th><th>메모</th><th></th></tr></thead>
@@ -639,7 +625,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-contacts" class="page">
     <div class="page-header">
       <div><div class="page-title">컨택 관리</div><div class="page-desc">소싱 브랜드 컨택 현황 및 특이사항</div></div>
-      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>openContactModal())">+ 컨택 등록</button>
+      <button class="btn btn-primary edit-only" onclick="(()=>openContactModal())">+ 컨택 등록</button>
     </div>
 
     <!-- 빠른 입력 -->
@@ -670,7 +656,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
   <div id="page-notes" class="page">
     <div class="page-header">
       <div><div class="page-title">메모</div><div class="page-desc">날짜별 소싱 노트 정리</div></div>
-      <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(newNote)">+ 새 메모</button>
+      <button class="btn btn-primary edit-only" onclick="newNote()">+ 새 메모</button>
     </div>
     <div class="notes-layout">
       <!-- 왼쪽: 메모 목록 -->
@@ -696,7 +682,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
           <div class="notes-empty-icon">✎</div>
           <div style="font-weight:600;font-size:15px;color:var(--text2)">메모를 선택하거나 새로 만들어보세요</div>
           <div style="font-size:13px">날짜별로 소싱 노트를 정리할 수 있어요</div>
-          <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(newNote)" style="margin-top:8px">+ 새 메모 작성</button>
+          <button class="btn btn-primary edit-only" onclick="newNote()" style="margin-top:8px">+ 새 메모 작성</button>
         </div>
       </div>
     </div>
@@ -707,8 +693,8 @@ body.viewer-mode .viewer-only{display:inline-flex}
     <div class="page-header">
       <div><div class="page-title">매출 / 수익</div><div class="page-desc">판매 실적 관리</div></div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button class="btn btn-primary edit-only" onclick="requestAdminUnlock(()=>{document.getElementById('dSaleDate').value=today();currentDailyChan='스마트스토어';selectDailyChan('스마트스토어');renderDailySaleItems();openModal('saleEntryModal');})">+ 판매 입력</button>
-        <button class="btn btn-danger edit-only" onclick="requestAdminUnlock(()=>clearAllOutLogs())" style="font-size:12px">🗑 출고내역 전체삭제</button>
+        <button class="btn btn-primary edit-only" onclick="(()=>{document.getElementById('dSaleDate').value=today();currentDailyChan='스마트스토어';selectDailyChan('스마트스토어');renderDailySaleItems();openModal('saleEntryModal');})">+ 판매 입력</button>
+        <button class="btn btn-danger edit-only" onclick="(()=>clearAllOutLogs())" style="font-size:12px">🗑 출고내역 전체삭제</button>
         <select id="salesMonth" onchange="renderSales()" style="padding:7px 11px;border:1px solid var(--border2);border-radius:var(--rsm);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit"></select>
       </div>
     </div>
@@ -756,7 +742,7 @@ body.viewer-mode .viewer-only{display:inline-flex}
       <div class="card" style="margin-bottom:1rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
           <div class="card-title" style="margin-bottom:0">광고 효율 & 손익</div>
-          <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openModal('adModal'))">✏ 광고비 입력</button>
+          <button class="btn btn-sm edit-only" onclick="(()=>openModal('adModal'))">✏ 광고비 입력</button>
         </div>
         <div id="adPerformance"><div class="empty" style="font-size:13px">광고비를 입력해주세요</div></div>
       </div>
@@ -1728,8 +1714,8 @@ function renderProductRow(p){
     <td>${avgPrice>0?won(Math.round(avgPrice)):'-'}</td>
     <td>${m>0?`<span class="badge ${mc}">${m}%</span>`:'-'}</td>
     <td onclick="event.stopPropagation()" style="display:flex;gap:4px">
-      <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openEditProductModal('${p.id}'))">수정</button>
-      <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=>deleteProduct('${p.id}'))">삭제</button>
+      <button class="btn btn-sm edit-only" onclick="(()=>openEditProductModal('${p.id}'))">수정</button>
+      <button class="btn btn-sm btn-danger edit-only" onclick="(()=>deleteProduct('${p.id}'))">삭제</button>
     </td>
   </tr>`;
 
@@ -1743,10 +1729,10 @@ function renderProductRow(p){
         <td></td>
         <td>
           <div style="display:flex;align-items:center;gap:6px">
-            <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',-1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">−</button>
-            <span id="qty-${p.id}-${v.id}" style="font-weight:600;min-width:28px;text-align:center;cursor:pointer;padding:2px 4px;border-radius:4px" class="edit-only" onclick="requestAdminUnlock(()=>inlineQtyEdit('${p.id}','${v.id}',${v.qty}))" title="클릭하여 직접 수정">${v.qty}</span>
+            <button class="edit-only" onclick="(()=>quickQtyEdit('${p.id}','${v.id}',-1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">−</button>
+            <span id="qty-${p.id}-${v.id}" style="font-weight:600;min-width:28px;text-align:center;cursor:pointer;padding:2px 4px;border-radius:4px" class="edit-only" onclick="(()=>inlineQtyEdit('${p.id}','${v.id}',${v.qty}))" title="클릭하여 직접 수정">${v.qty}</span>
             <span class="viewer-only" style="font-weight:600">${v.qty}</span>
-            <button class="edit-only" onclick="requestAdminUnlock(()=>quickQtyEdit('${p.id}','${v.id}',1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">+</button>
+            <button class="edit-only" onclick="(()=>quickQtyEdit('${p.id}','${v.id}',1))" style="width:22px;height:22px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0">+</button>
             <span class="badge ${st.cls}" style="font-size:10px">${st.label}</span>
           </div>
         </td>
@@ -1758,7 +1744,7 @@ function renderProductRow(p){
       </tr>`;
     });
     html+=`<tr class="add-variant-row"><td colspan="8" style="padding-left:52px">
-      <button class="add-variant-btn edit-only" onclick="requestAdminUnlock(()=>openEditProductModal('${p.id}'))">+ 옵션 추가 / 수정</button>
+      <button class="add-variant-btn edit-only" onclick="(()=>openEditProductModal('${p.id}'))">+ 옵션 추가 / 수정</button>
     </td></tr>`;
   }
   return html;
@@ -2006,14 +1992,14 @@ function renderSourcing(){
       <td style="color:var(--text3)">${fmtL(p.costLocal,p.currency||'EUR')}</td>
       <td>
         <span id="sc-cost-${p.id}" style="${editStyle}" class="edit-only" title="클릭하여 수정"
-          ${editHint} onclick="requestAdminUnlock(()=>inlineSourcingEdit('${p.id}','costKrw',${p.costKrw||0}))">
+          ${editHint} onclick="(()=>inlineSourcingEdit('${p.id}','costKrw',${p.costKrw||0}))">
           ${p.costKrw?won(p.costKrw):'-'}
         </span>
         <span class="viewer-only">${p.costKrw?won(p.costKrw):'-'}</span>
       </td>
       <td>
         <span id="sc-price-${p.id}" style="${editStyle}" class="edit-only" title="클릭하여 수정"
-          ${editHint} onclick="requestAdminUnlock(()=>inlineSourcingEdit('${p.id}','priceKrw',${p.priceKrw||0}))">
+          ${editHint} onclick="(()=>inlineSourcingEdit('${p.id}','priceKrw',${p.priceKrw||0}))">
           ${p.priceKrw?won(p.priceKrw):'-'}
         </span>
         <span class="viewer-only">${p.priceKrw?won(p.priceKrw):'-'}</span>
@@ -2156,7 +2142,7 @@ async function syncOrderToInventory(o){
 
 /* ── 발주 빠른 입력 ── */
 window.submitQuickOrder=async function(){
-  if(!isAdmin)return requestAdminUnlock(()=>submitQuickOrder());
+  if(!isAdmin)return (()=>submitQuickOrder());
   const raw=document.getElementById('quickOrderInput').value.trim();
   const res=document.getElementById('quickOrderResult');
   if(!raw)return;
@@ -2224,7 +2210,7 @@ function renderOrders(){
       <td style="font-size:12px">${shipLabel}</td>
       <td style="font-size:12px;color:var(--text3);white-space:nowrap">${o.eta||'-'}</td>
       <td>
-        <select class="edit-only" onchange="requestAdminUnlock(()=>updateOrderStatus('${o.id}',this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
+        <select class="edit-only" onchange="(()=>updateOrderStatus('${o.id}',this.value))" style="font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer">
           ${Object.entries(ORDER_STATUS).map(([k,v])=>`<option value="${k}"${o.status===k?' selected':''}>${v.label}</option>`).join('')}
         </select>
         <span class="badge ${st.cls}" style="font-size:11px">
@@ -2233,8 +2219,8 @@ function renderOrders(){
       </td>
       <td style="font-size:12px;color:var(--text3)">${o.memo||'-'}</td>
       <td style="display:flex;gap:4px;white-space:nowrap">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openOrderModal('${o.id}'))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=>deleteOrder('${o.id}'))">삭제</button>
+        <button class="btn btn-sm edit-only" onclick="(()=>openOrderModal('${o.id}'))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="(()=>deleteOrder('${o.id}'))">삭제</button>
       </td>
     </tr>`;
   }).join('')
@@ -2446,50 +2432,14 @@ window.importData=async function(event){
 };
 
 /* ── AUTH ── */
-function h(s){let hash=0;for(let i=0;i<s.length;i++){hash=((hash<<5)-hash)+s.charCodeAt(i);hash|=0;}return hash.toString(36);}
-function getMPw(){return localStorage.getItem('hd4-mpw')||h('holidays1234');}
-let isAdmin=false;let pendingAction=null;
+/* 비번 없음 — 항상 관리자 */
+let isAdmin=true;
+let pendingAction=null;
+window.requestAdminUnlock=function(cb){if(cb)cb();};
+window.submitAdminAuth=function(){};
+window.lockAdmin=function(){};
+window.changeMasterPw=function(){};
 
-window.requestAdminUnlock=function(cb){
-  if(isAdmin){if(cb)cb();return;}
-  pendingAction=cb||null;
-  document.getElementById('adminAuthPw').value='';
-  document.getElementById('adminAuthError').classList.remove('show');
-  openModal('adminAuthModal');
-  setTimeout(()=>document.getElementById('adminAuthPw').focus(),100);
-};
-window.submitAdminAuth=function(){
-  const pw=document.getElementById('adminAuthPw').value;
-  const err=document.getElementById('adminAuthError');
-  if(h(pw)===getMPw()){
-    isAdmin=true;closeModal('adminAuthModal');
-    document.body.classList.remove('viewer-mode');
-    document.getElementById('adminBanner').style.display='flex';
-    document.getElementById('adminLockBtn').style.display='none';
-    document.getElementById('adminUnlockBtn').style.display='flex';
-    if(pendingAction){pendingAction();pendingAction=null;}
-  }else{err.textContent='비밀번호가 올바르지 않습니다';err.classList.add('show');}
-};
-window.lockAdmin=function(){
-  isAdmin=false;
-  document.body.classList.add('viewer-mode');
-  document.getElementById('adminBanner').style.display='none';
-  document.getElementById('adminLockBtn').style.display='block';
-  document.getElementById('adminUnlockBtn').style.display='none';
-};
-window.changeMasterPw=function(){
-  const cur=document.getElementById('pwCurMaster').value;
-  const n1=document.getElementById('pwNewMaster').value;
-  const n2=document.getElementById('pwNewMaster2').value;
-  if(h(cur)!==getMPw())return alert('현재 비밀번호가 올바르지 않습니다');
-  if(n1.length<6)return alert('새 비밀번호는 6자 이상');
-  if(n1!==n2)return alert('비밀번호가 일치하지 않습니다');
-  localStorage.setItem('hd4-mpw',h(n1));
-  ['pwCurMaster','pwNewMaster','pwNewMaster2'].forEach(id=>document.getElementById(id).value='');
-  alert('비밀번호가 변경되었습니다!');
-};
-
-/* ── 빠른 입력 ── */
 /* ── 재고 수량 직접 수정 ── */
 window.quickQtyEdit=function(productId,variantId,delta){
   const p=products.find(x=>x.id===productId);if(!p)return;
@@ -2539,14 +2489,13 @@ window.inlineQtyEdit=function(productId,variantId,currentQty){
         type:'adjust', // 재고조정 — 매출 집계 안 됨
         qty:Math.abs(delta),date:today(),memo:'재고직접조정'})
     ]).then(()=>setSyncState('ok')).catch(e=>console.error(e));
-    ]).then(()=>setSyncState('ok')).catch(e=>console.error(e));
   };
   input.addEventListener('blur',save);
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();}if(e.key==='Escape'){saved=true;renderInventory();}});
 };
 
 window.submitQuickInput=async function(){
-  if(!isAdmin)return requestAdminUnlock(()=>submitQuickInput());
+  if(!isAdmin)return (()=>submitQuickInput());
   const raw=document.getElementById('quickInput').value.trim();
   const res=document.getElementById('quickResult');
   if(!raw)return;
@@ -2710,15 +2659,15 @@ function renderContacts(){
       <td style="font-size:12px;color:var(--text3);white-space:nowrap">${c.date||'-'}</td>
       <td><span class="badge ${st.cls}">${st.label}</span></td>
       <td class="edit-only" style="display:flex;gap:4px">
-        <button class="btn btn-sm edit-only" onclick="requestAdminUnlock(()=>openContactModal('${c.id}'))">수정</button>
-        <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=>deleteContact('${c.id}'))">삭제</button>
+        <button class="btn btn-sm edit-only" onclick="(()=>openContactModal('${c.id}'))">수정</button>
+        <button class="btn btn-sm btn-danger edit-only" onclick="(()=>deleteContact('${c.id}'))">삭제</button>
       </td>
     </tr>`;
   }).join('');
 }
 
 window.submitQuickContact=async function(){
-  if(!isAdmin)return requestAdminUnlock(()=>submitQuickContact());
+  if(!isAdmin)return (()=>submitQuickContact());
   const raw=document.getElementById('quickContactInput').value.trim();
   const res=document.getElementById('quickContactResult');
   if(!raw)return;
@@ -2765,7 +2714,7 @@ function renderStockLogs(){
       <td style="font-weight:600">${l.qty}개</td>
       <td style="font-size:12px;color:var(--text3)">${l.memo||'-'}</td>
       <td class="edit-only">
-        <button class="btn btn-sm btn-danger" onclick="requestAdminUnlock(()=>deleteStockLog('${l.id}','${l.productId}','${l.variantId}',${l.qty},'${l.type}'))">삭제</button>
+        <button class="btn btn-sm btn-danger" onclick="(()=>deleteStockLog('${l.id}','${l.productId}','${l.variantId}',${l.qty},'${l.type}'))">삭제</button>
       </td>
     </tr>`;
   }).join('');
@@ -3163,7 +3112,7 @@ function renderNoteEditor(note){
       <span style="font-size:11px;color:var(--text3)">${note.date||today()}</span>
       ${tags.map(t=>`<button class="note-tag-btn${note.tag===t?' selected':''}" onclick="setNoteTag('${t}')">${t}</button>`).join('')}
       <span class="note-save-indicator" id="noteSaveInd">저장됨</span>
-      <button class="btn btn-sm btn-danger edit-only" onclick="requestAdminUnlock(()=>deleteNote('${note.id}'))">삭제</button>
+      <button class="btn btn-sm btn-danger edit-only" onclick="(()=>deleteNote('${note.id}'))">삭제</button>
     </div>
     <div class="notes-editor-body">
       <input class="note-title-input edit-only" id="noteTitle" placeholder="제목을 입력하세요" value="${(note.title||'').replace(/"/g,'&quot;')}" oninput="onNoteChange()">
@@ -3208,7 +3157,7 @@ window.deleteNote=async function(id){
   await fbDelete('notes',id);
   currentNoteId=null;
   const editor=document.getElementById('notesEditor');
-  if(editor)editor.innerHTML=`<div class="notes-empty-state"><div class="notes-empty-icon">✎</div><div style="font-weight:600;font-size:15px;color:var(--text2)">메모가 삭제됐어요</div><button class="btn btn-primary edit-only" onclick="requestAdminUnlock(newNote)" style="margin-top:8px">+ 새 메모 작성</button></div>`;
+  if(editor)editor.innerHTML=`<div class="notes-empty-state"><div class="notes-empty-icon">✎</div><div style="font-weight:600;font-size:15px;color:var(--text2)">메모가 삭제됐어요</div><button class="btn btn-primary edit-only" onclick="newNote()" style="margin-top:8px">+ 새 메모 작성</button></div>`;
 };
 
 /* ── 엑셀 업로드 ── */
@@ -3481,7 +3430,7 @@ window.downloadExcelTemplate=function(){
 
 /* ── INIT ── */
 document.getElementById('orDate').value=today();
-document.body.classList.add('viewer-mode');
+// viewer-mode removed
 try{adCostsData=JSON.parse(localStorage.getItem('hd4-adcosts')||'{}');}catch{adCostsData={};}
 startListeners();
 fetchRates();
